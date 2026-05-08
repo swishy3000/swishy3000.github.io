@@ -11,857 +11,1495 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --navy:#0D172A;
-  --card:#101D36;
-  --card2:#162545;
-  --navy2:#0D172A;
-  --navy3:#162040;
-  --border:rgba(255,255,255,0.07);
-  --border2:rgba(255,255,255,0.12);
-  --violet:#6366f1;
-  --violet2:#818cf8;
-  --violet-dim:rgba(99,102,241,0.15);
-  --slate:#8b9ab4;
-  --slate2:#b0bdcf;
-  --white:#f0f4ff;
-  --text:#e8edf5;
-  --muted:#4a5c78;
-  --green:#34d399;
-  --radius:14px;
-  --radius-sm:10px;
-  --radius-xs:8px;
+/* ── RESET & TOKENS ──────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
-html{height:-webkit-fill-available;height:100%}
-html,body{min-height:100%;min-height:-webkit-fill-available;margin:0;background:var(--navy);color:var(--text);font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;line-height:1.5}
-.app{display:flex;flex-direction:column;height:100vh;height:100dvh;min-height:-webkit-fill-available;max-width:430px;margin:0 auto;background:var(--navy)}
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:96px;min-height:0}
-.screen::-webkit-scrollbar{width:0}
-.header{padding:max(env(safe-area-inset-top),28px) 16px 20px}
-.screen::-webkit-scrollbar{width:0}
 
-.header{padding:28px 16px 20px}
-.header-inner{display:flex;align-items:center;justify-content:space-between}
-.logo{font-family:'DM Serif Display',serif;font-size:36px;color:var(--white);letter-spacing:-0.5px}
-.logo span{color:var(--violet2)}
-.header-btn{background:var(--card);border:0.5px solid var(--border2);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.15s}
-.header-btn svg{width:16px;height:16px;stroke:var(--slate2);stroke-width:1.8;fill:none}
+:root {
+  --navy:        #0a0d1f;
+  --card:        #101D36;
+  --card2:       #162545;
+  --card-grad:   linear-gradient(160deg, rgba(124,119,255,0.07), rgba(124,119,255,0.01));
+  --card-shadow: rgba(255,255,255,0.04) 0px 1px 0px 0px inset, rgba(0,0,0,0.45) 0px 12px 40px 0px;
+  --border:      rgba(255,255,255,0.12);
+  --violet:      #6366f1;
+  --violet2:     #818cf8;
+  --violet-dim:  rgba(99,102,241,0.15);
+  --slate:      #b0bdcf;
+  --white:       #f0f4ff;
+  --muted:       #4a5c78;
+  --green:       #7fb3a3;
+  --red:         #e8c87a;
+  --radius:      14px;
+  --radius-sm:   10px;
+  --radius-xs:   8px;
+}
 
-.week-nav-row{display:flex;align-items:center;justify-content:space-between;padding:0 16px 6px}
-.week-nav-date{font-size:12px;color:var(--slate);font-weight:500;text-transform:uppercase;letter-spacing:0.07em}
-.week-nav-arrows{display:flex;gap:4px}
-.week-nav-arrow{background:none;border:none;padding:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px}
-.week-nav-arrow svg{width:16px;height:16px;stroke:var(--slate2);stroke-width:2;fill:none}
-.week-nav-arrow:disabled svg{stroke:var(--muted);opacity:0.4}
+html { height: -webkit-fill-available; }
+html, body {
+  min-height: 100%;
+  min-height: -webkit-fill-available;
+  margin: 0;
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
 
-.week-strip{padding:0 16px 20px;touch-action:pan-y;overflow:hidden}
-.week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.day-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:var(--radius-sm);cursor:pointer;background:transparent;justify-content:center;transition:all 0.18s}
-.day-btn .day-label{font-size:9px;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);font-weight:600;line-height:1}
-.day-btn .day-num{font-size:17px;font-weight:500;color:var(--muted);line-height:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all 0.18s}
-.day-btn .day-dot{width:4px;height:4px;border-radius:50%;background:transparent;flex-shrink:0}
-.day-btn.has-data .day-dot{background:var(--violet)}
-.day-btn.has-data .day-num{color:var(--slate2)}
-.day-btn.today .day-num{color:var(--white)}
-.day-btn.today .day-label{color:var(--slate)}
-.day-btn.selected .day-num{background:var(--violet);color:#fff}
-.day-btn.future{opacity:0.3;cursor:default;pointer-events:none}
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  min-height: -webkit-fill-available;
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--navy);
+  /* subtle violet gradient mesh over dark background */
+  background-image:
+    radial-gradient(ellipse 140% 55% at 50% -2%, rgba(80,85,220,0.55) 0%, rgba(80,85,220,0.18) 35%, transparent 65%),
+    radial-gradient(ellipse 80% 30% at 75% 95%, rgba(99,102,241,0.12) 0%, transparent 60%);
+}
 
-.card{margin:0 16px 12px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px}
-.card-header{display:flex;align-items:center;gap:12px;padding:2px 0 16px}
-.card-header-icon{width:36px;height:36px;border-radius:10px;background:var(--violet-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.card-header-icon svg{width:18px;height:18px;stroke:var(--violet2);stroke-width:1.8;fill:none}
-.card-header-text{display:flex;flex-direction:column;gap:1px}
-.card-header-sub{font-size:11px;text-transform:uppercase;letter-spacing:0.09em;color:var(--violet2);font-weight:600}
-.card-header-title{font-size:16px;font-weight:500;color:var(--white)}
+.screen {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 96px;
+  min-height: 0;
+}
+.screen::-webkit-scrollbar { width: 0; }
 
-.field-block{padding:4px 0 2px;margin-bottom:20px}
-.field-block:last-child{margin-bottom:0}
-.field-label{font-size:12px;color:var(--slate2);font-weight:600;margin-bottom:10px}
+/* ── HEADER ──────────────────────────────────────────────── */
+.header {
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px 20px;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  color: var(--white);
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--violet2); }
 
-.energy-row{display:flex;gap:8px;justify-content:space-between}
-.energy-btn{flex:1;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--border2);background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--slate);cursor:pointer;transition:all 0.18s;max-width:56px}
-.energy-btn:hover{border-color:var(--violet);color:var(--white)}
-.energy-btn.filled{border-color:var(--violet);background:var(--violet-dim);color:var(--violet2)}
-.energy-btn.selected{border-color:var(--violet);background:var(--violet);color:#fff}
+.header-btn {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.header-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--slate);
+  stroke-width: 1.8;
+  fill: none;
+}
 
-.input-field{width:100%;background:var(--navy3);border:0.5px solid var(--border2);border-radius:var(--radius-xs);padding:12px 14px;font-size:16px;color:var(--text);font-family:'DM Sans',sans-serif;resize:none;outline:none;line-height:1.5;transition:border-color 0.18s}
-.input-field::placeholder{color:var(--muted)}
-.input-field:focus{border-color:var(--violet)}
-.input-field.multiline{min-height:90px}
+/* ── WEEK STRIP ──────────────────────────────────────────── */
+.week-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 6px;
+}
+.week-nav-date {
+  font-size: 12px;
+  color: var(--slate);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.week-nav-arrows { display: flex; gap: 4px; }
+.week-nav-arrow {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.week-nav-arrow svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--slate);
+  stroke-width: 2;
+  fill: none;
+}
+.week-nav-arrow:disabled svg { stroke: var(--muted); opacity: 0.4; }
 
-.tag-list{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
-.tag{display:flex;align-items:center;gap:5px;background:var(--navy3);border:0.5px solid var(--border2);border-radius:20px;padding:5px 12px 5px 14px;font-size:13px;color:var(--slate2)}
-.tag.positive{border-color:rgba(52,211,153,0.35);background:rgba(52,211,153,0.08);color:#6ee7b7}
-.tag.negative{border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);color:#fca5a5}
-.tag-remove{cursor:pointer;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;opacity:0.6}
-.tag-remove svg{width:10px;height:10px;stroke:currentColor;stroke-width:2.5;fill:none}
+.week-strip {
+  padding: 0 16px 20px;
+  touch-action: pan-y;
+  overflow: hidden;
+}
+.week-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
 
-.save-btn{display:flex;align-items:center;gap:6px;background:var(--violet);border:none;border-radius:var(--radius-xs);padding:16px 20px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;width:calc(100% - 32px);margin:8px 16px 4px;justify-content:center}
-.save-btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:2.5;fill:none}
-.save-btn.saved{background:#059669;pointer-events:none}
+.day-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 2px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: transparent;
+  justify-content: center;
+  transition: all 0.18s;
+}
+.day-btn .day-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1;
+}
+.day-btn .day-num {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.18s;
+}
+.day-btn .day-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: transparent;
+  flex-shrink: 0;
+}
+.day-btn.has-data .day-dot   { background: var(--violet); }
+.day-btn.has-data .day-num   { color: var(--slate); }
+.day-btn.today .day-num      { color: var(--white); }
+.day-btn.today .day-label    { color: var(--slate); }
+.day-btn.selected .day-num   { background: var(--violet); color: #fff; }
+.day-btn.future              { opacity: 0.3; cursor: default; pointer-events: none; }
 
-.ro-energy-num{font-size:22px;font-weight:600;color:var(--white)}
-.ro-text{font-size:15px;color:var(--slate2);line-height:1.6}
-.ro-empty{font-size:13px;color:var(--muted);padding:4px 0 8px;font-style:italic}
+/* ── CARDS ───────────────────────────────────────────────── */
+.card {
+  margin: 0 16px 12px;
+  background: var(--card-grad);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--card-shadow);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 0 16px;
+}
+.card-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--violet-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-header-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--violet2);
+  stroke-width: 1.8;
+  fill: none;
+}
+.card-header-text  { display: flex; flex-direction: column; gap: 1px; }
+.card-header-sub   { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--violet2); font-weight: 600; }
+.card-header-title { font-size: 18px; font-weight: 400; color: var(--white); font-family: 'DM Serif Display', serif; line-height: 1.15; }
 
-.nav-bar-wrap{flex-shrink:0;padding:0 20px max(env(safe-area-inset-bottom),20px);background:transparent;margin-top:-72px;position:relative;z-index:10;pointer-events:none}
-.nav-bar{display:flex;justify-content:space-around;background:rgba(16,29,54,0.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:0.5px solid var(--border2);border-radius:28px;padding:8px 8px;pointer-events:auto;box-shadow:0 8px 32px rgba(0,0,0,0.35)}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 20px;border-radius:20px;transition:all 0.2s;background:transparent}
-.nav-item svg{width:22px;height:22px;stroke:var(--muted);stroke-width:1.7;fill:none;transition:stroke 0.18s}
-.nav-item .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;transition:color 0.18s}
-.nav-item.active{background:transparent}
-.nav-item.active svg{stroke:var(--violet2)}
-.nav-item.active .nav-label{color:var(--violet2);font-weight:600}
+/* ── FORM FIELDS ─────────────────────────────────────────── */
+.field-block {
+  padding: 4px 0 2px;
+  margin-bottom: 20px;
+}
+.field-block:last-child { margin-bottom: 0; }
+.field-label { font-size: 12px; color: var(--slate); font-weight: 600; margin-bottom: 10px; }
 
-.insight-top-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px}
-.insight-title{font-family:'DM Sans',sans-serif;font-size:28px;color:var(--white);font-weight:600}
-.segmented{display:flex;background:var(--card);border:0.5px solid var(--border2);border-radius:var(--radius-xs);padding:3px}
-.insight-sub-tab{padding:5px 14px;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;border:none;background:transparent;color:var(--slate);cursor:pointer;transition:all 0.18s;border-radius:6px;text-align:center;white-space:nowrap}
-.insight-sub-tab.active{background:var(--violet);color:#fff}
+.energy-row { display: flex; gap: 8px; justify-content: space-between; }
+.energy-btn {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--card2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--slate);
+  cursor: pointer;
+  transition: all 0.18s;
+  max-width: 56px;
+}
+.energy-btn:hover  { border-color: var(--violet); color: var(--white); }
+.energy-btn.filled { border-color: var(--violet); background: var(--violet-dim); color: var(--violet2); }
+.energy-btn.selected { border-color: var(--violet); background: var(--violet); color: #fff; }
 
-.insight-period-nav{display:flex;align-items:center;justify-content:space-between;padding:0 12px 14px}
-.insight-period-label{font-size:13px;font-weight:500;color:var(--slate2)}
-.nav-arrow-btn{background:var(--card);border:0.5px solid var(--border);padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-xs)}
-.nav-arrow-btn svg{width:18px;height:18px;stroke:var(--slate2);stroke-width:2;fill:none}
-.nav-arrow-btn:disabled{opacity:0.3;cursor:default}
+.input-field {
+  width: 100%;
+  background: var(--card2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.18s;
+}
+.input-field::placeholder { color: var(--muted); }
+.input-field:focus         { border-color: var(--violet); }
 
-.chart-card{margin:0 16px 12px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius);padding:18px 20px}
-.chart-title{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--violet2);font-weight:600;margin-bottom:14px}
-.diff-chart{display:grid;grid-template-columns:repeat(var(--diff-cols,7),1fr);gap:4px;position:relative;padding:8px 0 0}
-.diff-zero-line{position:absolute;left:0;right:0;top:calc(8px + 52px + 24px);height:1px;background:var(--border2);pointer-events:none}
-.diff-col{display:flex;flex-direction:column;align-items:center;gap:4px}
-.diff-bar-wrap{display:flex;flex-direction:column;align-items:center;height:128px;justify-content:center}
-.diff-bar-pos{display:flex;flex-direction:column;justify-content:flex-end;height:52px;width:100%}
-.diff-bar-neg{display:flex;flex-direction:column;justify-content:flex-start;height:52px;width:100%}
-.diff-bar{width:70%;margin:0 auto;min-height:3px}
-.diff-bar:not(.neg){border-radius:3px 3px 0 0}
-.diff-bar.neg{border-radius:0 0 3px 3px}
-.diff-val{font-size:11px;font-weight:600;line-height:1;height:24px;display:flex;align-items:center;color:var(--slate)}
-.bar-day{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em}
-.bar-day-today{color:var(--slate2);font-weight:600}
-.chart-stats{display:flex;align-items:center;margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border)}
-.chart-stat{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.chart-stat-val{font-size:15px;font-weight:600;color:var(--white)}
-.chart-stat-val.positive{color:#6ee7b7}
-.chart-stat-val.negative{color:#f87171}
-.chart-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:500}
-.chart-stat-divider{width:0.5px;height:28px;background:var(--border);flex-shrink:0}
+/* ── TAGS ────────────────────────────────────────────────── */
+.tag-list { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 8px; }
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--card2);
+  border: 0.5px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px 5px 14px;
+  font-size: 13px;
+  color: var(--slate);
+}
+.tag.positive { border-color: rgba(127,179,163,0.35); background: rgba(127,179,163,0.08); color: #7fb3a3; }
+.tag.negative { border-color: rgba(232,200,122,0.35); background: rgba(232,200,122,0.08); color: #e8c87a; }
+.tag-remove {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+.tag-remove svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2.5; fill: none; }
 
-.corr-card-title{font-size:11px;font-weight:600;color:var(--slate2);margin-bottom:14px;text-transform:uppercase;letter-spacing:0.09em}
-.corr-list{display:flex;flex-direction:column;gap:14px}
-.corr-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px}
-.corr-name{font-size:14px;color:var(--text);font-weight:500}
-.corr-score{font-size:13px;font-weight:600}
-.corr-score.positive{color:#6ee7b7}
-.corr-score.negative{color:#f87171}
-.corr-bar-bg{height:5px;background:var(--navy3);border-radius:3px;overflow:hidden;margin-bottom:4px}
-.corr-bar-fill{height:100%;border-radius:3px}
-.corr-bar-fill.positive{background:var(--green)}
-.corr-bar-fill.negative{background:#f87171}
-.corr-meta{font-size:11px;color:var(--muted)}
-.corr-note{font-size:11px;color:var(--muted);padding:4px 20px 16px;line-height:1.5;font-style:italic}
+/* ── BUTTONS ─────────────────────────────────────────────── */
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(to right, var(--violet2), var(--violet));
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  width: calc(100% - 32px);
+  margin: 8px 16px 4px;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.save-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255,255,255,0.55), rgba(255,255,255,0.15));
+  pointer-events: none;
+}
+.save-btn svg   { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+.save-btn.saved { background: linear-gradient(to right, #5fa88a, #2d7a5e); pointer-events: none; }
 
-.day-detail-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 10px}
-.day-detail-date{font-size:14px;font-weight:500;color:var(--white)}
-.day-detail-close{background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center}
-.day-detail-close svg{width:16px;height:16px;stroke:var(--muted);stroke-width:2;fill:none}
+.secondary-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--slate);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  width: calc(100% - 32px);
+  margin: 8px 16px 4px;
+  justify-content: center;
+}
 
-.settings-section{padding:0 16px 10px}
-.settings-btn{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;color:var(--slate2);font-size:14px;font-family:'DM Sans',sans-serif}
-.settings-btn svg{width:18px;height:18px;stroke:var(--violet2);stroke-width:1.8;fill:none;flex-shrink:0}
-.settings-label{font-size:12px;color:var(--muted);padding:12px 16px 6px;text-transform:uppercase;letter-spacing:0.08em;font-weight:500}
+/* ── READ-ONLY VIEW ──────────────────────────────────────── */
+.ro-empty { font-size: 13px; color: var(--muted); padding: 4px 0 8px; font-style: italic; }
 
-.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 20px;font-size:13px;color:var(--white);z-index:200;opacity:0;transition:all 0.25s;pointer-events:none;white-space:nowrap}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── NAV BAR ─────────────────────────────────────────────── */
+.nav-bar-wrap {
+  flex-shrink: 0;
+  height: 0;
+  padding: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+.nav-bar {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(22,27,58,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid var(--border);
+  border-radius: 28px;
+  padding: 8px;
+  pointer-events: auto;
+  box-shadow: rgba(255,255,255,0.04) 0px 1px 0px 0px inset, rgba(0,0,0,0.45) 0px -8px 32px 0px;
+  position: absolute;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  left: 20px;
+  right: 20px;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 6px 20px;
+  border-radius: 20px;
+  transition: all 0.2s;
+  background: transparent;
+}
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--muted);
+  stroke-width: 1.7;
+  fill: none;
+  transition: stroke 0.18s;
+}
+.nav-item .nav-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 500;
+  transition: color 0.18s;
+}
+.nav-item.active svg         { stroke: var(--violet2); }
+.nav-item.active .nav-label  { color: var(--violet2); font-weight: 600; }
 
-.empty-state{text-align:center;padding:48px 32px;color:var(--muted)}
-.empty-state svg{width:48px;height:48px;stroke:var(--muted);stroke-width:1.2;fill:none;margin-bottom:16px;opacity:0.5}
-.empty-state p{font-size:14px;line-height:1.6}
+/* ── INSIGHTS ────────────────────────────────────────────── */
+.insight-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 12px;
+}
+.insight-title  { font-size: 28px; color: var(--white); font-weight: 600; }
+
+.segmented {
+  display: flex;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 3px;
+}
+.insight-sub-tab {
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  background: transparent;
+  color: var(--slate);
+  cursor: pointer;
+  transition: all 0.18s;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.insight-sub-tab.active { background: var(--violet); color: #fff; }
+
+.insight-period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 14px;
+}
+.insight-period-label { font-size: 13px; font-weight: 500; color: var(--slate); }
+.nav-arrow-btn {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  padding: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+}
+.nav-arrow-btn svg    { width: 18px; height: 18px; stroke: var(--slate); stroke-width: 2; fill: none; }
+.nav-arrow-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* ── CHART ───────────────────────────────────────────────── */
+.chart-card {
+  margin: 0 16px 12px;
+  background: var(--card-grad);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--card-shadow);
+}
+.chart-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--violet2);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.chart-stats {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 0.5px solid var(--border);
+}
+.chart-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.chart-stat-val          { font-size: 15px; font-weight: 600; color: var(--white); }
+.chart-stat-val.positive { color: #7fb3a3; }
+.chart-stat-val.negative { color: var(--red); }
+.chart-stat-label        { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+.chart-stat-divider      { width: 0.5px; height: 28px; background: var(--border); flex-shrink: 0; }
+
+/* ── CORRELATIONS ────────────────────────────────────────── */
+.corr-card-title { font-size: 11px; font-weight: 600; color: var(--slate); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.09em; }
+.corr-list       { display: flex; flex-direction: column; gap: 14px; }
+.corr-top        { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 5px; }
+.corr-name       { font-size: 14px; color: var(--white); font-weight: 500; }
+.corr-score      { font-size: 13px; font-weight: 600; }
+.corr-score.positive { color: #7fb3a3; }
+.corr-score.negative { color: var(--red); }
+.corr-bar-bg     { height: 5px; background: var(--card2); border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+.corr-bar-fill   { height: 100%; border-radius: 3px; }
+.corr-bar-fill.positive { background: var(--green); }
+.corr-bar-fill.negative { background: var(--red); }
+.corr-meta       { font-size: 11px; color: var(--muted); }
+.corr-note       { font-size: 11px; color: var(--muted); padding: 4px 20px 16px; line-height: 1.5; font-style: italic; }
+
+/* ── DAY DETAIL ──────────────────────────────────────────── */
+.day-detail-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 10px; }
+.day-detail-date   { font-size: 14px; font-weight: 500; color: var(--white); }
+.day-detail-close  { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.day-detail-close svg { width: 16px; height: 16px; stroke: var(--muted); stroke-width: 2; fill: none; }
+
+/* ── SETTINGS SHEET ──────────────────────────────────────── */
+.settings-section { padding: 0 16px 10px; }
+.settings-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--card-grad);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: var(--slate);
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: var(--card-shadow);
+}
+.settings-btn svg { width: 18px; height: 18px; stroke: var(--violet2); stroke-width: 1.8; fill: none; flex-shrink: 0; }
+.settings-label   { font-size: 12px; color: var(--muted); padding: 12px 16px 6px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+
+/* ── TOAST ───────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--card2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 13px;
+  color: var(--white);
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── EMPTY STATE ─────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 48px 32px; color: var(--muted); }
+.empty-state svg { width: 48px; height: 48px; stroke: var(--muted); stroke-width: 1.2; fill: none; margin-bottom: 16px; opacity: 0.5; }
+.empty-state p   { font-size: 14px; line-height: 1.6; }
 </style>
 </head>
 <body>
 <div class="app">
-<div class="toast" id="toast"></div>
+  <div class="toast" id="toast"></div>
 
-<div class="screen" id="screen-main">
-  <div class="header">
-    <div class="header-inner">
-      <div class="logo">Lumina<span>.</span></div>
-      <button class="header-btn" onclick="showExportImport()">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-    </div>
-  </div>
+  <!-- ── MAIN SCREEN ── -->
+  <div class="screen" id="screen-main">
 
-  <div id="view-daily">
-    <div class="week-nav-row">
-      <span class="week-nav-date" id="week-label"></span>
-      <div class="week-nav-arrows">
-        <button class="week-nav-arrow" onclick="shiftWeek(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button class="week-nav-arrow" id="week-next-btn" onclick="shiftWeek(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="header">
+      <div class="header-inner">
+        <div class="logo">Lumina<span>.</span></div>
+        <button class="header-btn" onclick="showModal()">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </button>
       </div>
     </div>
-    <div class="week-strip"><div class="week-row" id="week-row"></div></div>
-    <div id="daily-content"></div>
-  </div>
 
-  <div id="view-insights" style="display:none">
-    <div class="insight-top-row">
-      <div class="insight-title">Insights</div>
-      <div class="segmented">
-        <div class="insight-sub-tab active" id="itab-week" onclick="setInsightRange('week')">Week</div>
-        <div class="insight-sub-tab" id="itab-month" onclick="setInsightRange('month')">Month</div>
+    <!-- Daily view -->
+    <div id="view-daily">
+      <div class="week-nav-row">
+        <span class="week-nav-date" id="week-label"></span>
+        <div class="week-nav-arrows">
+          <button class="week-nav-arrow" onclick="shiftWeek(-1)">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="week-nav-arrow" id="week-next-btn" onclick="shiftWeek(1)">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="week-strip">
+        <div class="week-row" id="week-row"></div>
+      </div>
+      <div id="daily-content"></div>
+    </div>
+
+    <!-- Insights view -->
+    <div id="view-insights" style="display:none">
+      <div class="insight-top-row">
+        <div class="insight-title">Insights</div>
+        <div class="segmented">
+          <div class="insight-sub-tab active" id="itab-week"  onclick="setInsightRange('week')">Week</div>
+          <div class="insight-sub-tab"        id="itab-month" onclick="setInsightRange('month')">Month</div>
+        </div>
+      </div>
+      <div class="insight-period-nav">
+        <button class="nav-arrow-btn" onclick="shiftInsight(-1)">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="insight-period-label" id="insight-period-label"></span>
+        <button class="nav-arrow-btn" id="insight-next-btn" onclick="shiftInsight(1)">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div id="insights-content"></div>
+    </div>
+
+  </div><!-- /screen -->
+
+  <!-- ── NAV BAR ── -->
+  <div class="nav-bar-wrap">
+    <div class="nav-bar">
+      <div class="nav-item active" id="nav-daily" onclick="switchView('daily')">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span class="nav-label">Today</span>
+      </div>
+      <div class="nav-item" id="nav-insights" onclick="switchView('insights')">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span class="nav-label">Insights</span>
       </div>
     </div>
-    <div class="insight-period-nav">
-      <button class="nav-arrow-btn" onclick="shiftInsight(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <span class="insight-period-label" id="insight-period-label"></span>
-      <button class="nav-arrow-btn" id="insight-next-btn" onclick="shiftInsight(1)"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
-    </div>
-    <div id="insights-content"></div>
   </div>
-</div>
 
-<div class="nav-bar-wrap">
-  <div class="nav-bar">
-    <div class="nav-item active" id="nav-daily" onclick="switchView('daily')">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      <span class="nav-label">Today</span>
-    </div>
-    <div class="nav-item" id="nav-insights" onclick="switchView('insights')">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span class="nav-label">Insights</span>
-    </div>
-  </div>
-</div>
-</div>
+</div><!-- /app -->
 
+<!-- ── MODAL ── -->
 <div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:150" onclick="hideModal()"></div>
-<div id="modal-sheet" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--navy2);border-top:0.5px solid var(--border2);border-radius:20px 20px 0 0;padding:24px 0 40px;z-index:151">
+<div id="modal-sheet" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(16,20,40,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:0.5px solid var(--border);border-radius:20px 20px 0 0;padding:24px 0 40px;z-index:151">
   <div style="width:36px;height:4px;background:var(--muted);border-radius:2px;margin:0 auto 20px"></div>
-  <div style="padding:0 20px 16px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--white)">Data & Settings</div>
+  <div style="padding:0 20px 20px;font-family:'DM Serif Display',serif;font-size:20px;color:var(--white)">Account</div>
+
   <div class="settings-section">
-    <div class="settings-label">Export / Import</div>
-    <button class="settings-btn" onclick="exportCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export all entries as CSV</button>
-    <button class="settings-btn" onclick="document.getElementById('import-input').click()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import from CSV</button>
-    <input type="file" id="import-input" accept=".csv" style="display:none" onchange="importCSV(this)">
+    <div class="settings-label">Profile</div>
+    <div class="settings-btn" style="cursor:default;opacity:0.5">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Sign in coming soon
+    </div>
   </div>
-  <div class="settings-section">
-    <div class="settings-label">Danger zone</div>
-    <button class="settings-btn" id="clear-btn" onclick="clearAllData()" style="color:#fca5a5"><svg viewBox="0 0 24 24" style="stroke:#fca5a5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>Clear all data</button>
+
+  <div class="settings-section" style="margin-top:8px">
+    <div class="settings-label">Data</div>
+    <button class="settings-btn" onclick="exportCSV()">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export entries as CSV
+    </button>
+    <button class="settings-btn" onclick="document.getElementById('import-input').click()">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import from CSV
+    </button>
+    <input type="file" id="import-input" accept=".csv" style="display:none" onchange="importCSV(this)">
+    <button class="settings-btn" id="clear-btn" onclick="clearAllData()" style="color:#e8c87a;margin-top:4px">
+      <svg viewBox="0 0 24 24" style="stroke:#e8c87a"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      Clear all data
+    </button>
+  </div>
+
+  <div class="settings-section" style="margin-top:8px">
+    <div class="settings-label">Developer</div>
+    <button class="settings-btn" onclick="loadMockData()">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      Load mock data
+    </button>
+    <div class="settings-btn" style="cursor:default;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:12px">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        About Lumina
+      </div>
+      <span style="font-size:12px;color:var(--muted)">v1.1.0</span>
+    </div>
   </div>
 </div>
 
 <script>
-// ── HELPERS ──────────────────────────────────────────────
-function localStr(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day}
-function todayStr(){return localStr(new Date())}
-function parseDate(s){const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2])}
-function addDays(s,n){const d=parseDate(s);d.setDate(d.getDate()+n);return localStr(d)}
-function fmtDay(s){return['Su','Mo','Tu','We','Th','Fr','Sa'][parseDate(s).getDay()]}
-function fmtDayNum(s){return parseInt(s.slice(8,10),10)}
-function getMondayOfWeek(s,offset){const d=parseDate(s);const dow=d.getDay();d.setDate(d.getDate()+(dow===0?-6:1-dow)+(offset*7));return localStr(d)}
-function avg(arr){return arr.reduce(function(a,b){return a+b},0)/arr.length}
-function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+// ── iOS VIEWPORT FIX ──────────────────────────────────────
+(function fixVh() {
+  const set = () => document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
+  set();
+  window.addEventListener('resize', set);
+})();
 
-// ── STORAGE ──────────────────────────────────────────────
-var STORAGE_KEY='lumina_v3';
-var entries={};
-var savedDates=[];
-
-function load(){
-  try{
-    var r=localStorage.getItem(STORAGE_KEY);
-    if(r){var d=JSON.parse(r);entries=d.entries||{};savedDates=d.saved||[];}
-  }catch(e){entries={};savedDates=[];}
+// ── DATE HELPERS ──────────────────────────────────────────
+function localStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify({entries:entries,saved:savedDates}))}
-function isSavedDate(d){return savedDates.indexOf(d)>=0}
-function getEntry(d){if(!entries[d])entries[d]={morningEnergy:0,intention:'',eveningEnergy:0,givers:[],drainers:[],reflection:''};return entries[d]}
-function hasData(d){var e=entries[d];return!!e&&(e.morningEnergy>0||e.eveningEnergy>0||(e.givers||[]).length>0||(e.drainers||[]).length>0)}
+function todayStr()      { return localStr(new Date()); }
+function parseDate(s)    { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function addDays(s, n)   { const d = parseDate(s); d.setDate(d.getDate() + n); return localStr(d); }
+function fmtDay(s)       { return ['Su','Mo','Tu','We','Th','Fr','Sa'][parseDate(s).getDay()]; }
+function fmtDayNum(s)    { return parseInt(s.slice(8, 10), 10); }
+function escHtml(s)      { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function avg(arr)        { return arr.reduce((a, b) => a + b, 0) / arr.length; }
 
-// ── STATE ─────────────────────────────────────────────────
-var selectedDate=todayStr();
-var weekOffset=0;
-var editingDate=null;
-var insightRange='week';
-var insightOffset=0;
-var insightSelectedDate=null;
+function getMondayOfWeek(s, offset) {
+  const d = parseDate(s);
+  const dow = d.getDay();
+  d.setDate(d.getDate() + (dow === 0 ? -6 : 1 - dow) + offset * 7);
+  return localStr(d);
+}
+
+function fmtDateRange(start, end) {
+  const s = parseDate(start), e = parseDate(end);
+  const fmt = d => d.toLocaleDateString('en-US', { month: 'short' });
+  return s.getMonth() === e.getMonth()
+    ? `${fmt(s)} ${s.getDate()}–${e.getDate()}`
+    : `${fmt(s)} ${s.getDate()} – ${fmt(e)} ${e.getDate()}`;
+}
+
+// ── STORAGE ───────────────────────────────────────────────
+const STORAGE_KEY = 'lumina_v3';
+let entries    = {};
+let savedDates = [];
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) { const d = JSON.parse(raw); entries = d.entries || {}; savedDates = d.saved || []; }
+  } catch (e) { entries = {}; savedDates = []; }
+}
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ entries, saved: savedDates }));
+}
+function isSaved(d)  { return savedDates.includes(d); }
+function getEntry(d) {
+  if (!entries[d]) entries[d] = { morningEnergy: 0, intention: '', eveningEnergy: 0, givers: [], drainers: [], reflection: '' };
+  return entries[d];
+}
+function hasData(d) {
+  const e = entries[d];
+  return !!e && (e.morningEnergy > 0 || e.eveningEnergy > 0 || (e.givers || []).length > 0 || (e.drainers || []).length > 0);
+}
+
+// ── APP STATE ─────────────────────────────────────────────
+let selectedDate       = todayStr();
+let weekOffset         = 0;
+let editingDate        = null;
+let insightRange       = 'week';
+let insightTab         = 'entries';
+let insightOffset      = 0;
+let insightSelectedDate = null;
+
 
 // ── TOAST ─────────────────────────────────────────────────
-function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
 
 // ── WEEK STRIP ────────────────────────────────────────────
-function buildWeekStrip(){
-  var row=document.getElementById('week-row');
-  var today=todayStr();
-  var mon=getMondayOfWeek(today,weekOffset);
-  var sun=addDays(mon,6);
-  var monD=parseDate(mon),sunD=parseDate(sun);
-  function fmtM(d){return d.toLocaleDateString('en-US',{month:'short'})}
-  var label=monD.getMonth()===sunD.getMonth()
-    ?(fmtM(monD)+' '+monD.getDate()+'–'+sunD.getDate())
-    :(fmtM(monD)+' '+monD.getDate()+' – '+fmtM(sunD)+' '+sunD.getDate());
-  document.getElementById('week-label').textContent=label;
-  var nextBtn=document.getElementById('week-next-btn');
-  if(nextBtn)nextBtn.disabled=weekOffset>=0;
-  row.innerHTML='';
-  for(var i=0;i<7;i++){
-    var d=addDays(mon,i);
-    var isFuture=d>today;
-    var cls='day-btn';
-    if(d===today)cls+=' today';
-    if(d===selectedDate)cls+=' selected';
-    if(hasData(d))cls+=' has-data';
-    if(isFuture)cls+=' future';
-    var btn=document.createElement('div');
-    btn.className=cls;
-    btn.innerHTML='<span class="day-label">'+fmtDay(d)+'</span><span class="day-num">'+fmtDayNum(d)+'</span><span class="day-dot"></span>';
-    if(!isFuture)(function(date){btn.onclick=function(){selectedDate=date;editingDate=null;buildWeekStrip();buildDailyContent()}})(d);
+function buildWeekStrip() {
+  const today = todayStr();
+  const mon   = getMondayOfWeek(today, weekOffset);
+  const sun   = addDays(mon, 6);
+
+  document.getElementById('week-label').textContent = fmtDateRange(mon, sun);
+  const nextBtn = document.getElementById('week-next-btn');
+  if (nextBtn) nextBtn.disabled = weekOffset >= 0;
+
+  const row = document.getElementById('week-row');
+  row.innerHTML = '';
+
+  for (let i = 0; i < 7; i++) {
+    const d        = addDays(mon, i);
+    const isFuture = d > today;
+    const classes  = ['day-btn',
+      d === today        && 'today',
+      d === selectedDate && 'selected',
+      hasData(d)         && 'has-data',
+      isFuture           && 'future',
+    ].filter(Boolean).join(' ');
+
+    const btn = document.createElement('div');
+    btn.className = classes;
+    btn.innerHTML = `<span class="day-label">${fmtDay(d)}</span><span class="day-num">${fmtDayNum(d)}</span><span class="day-dot"></span>`;
+    if (!isFuture) btn.onclick = () => { selectedDate = d; editingDate = null; buildWeekStrip(); buildDailyContent(); };
     row.appendChild(btn);
   }
 }
 
-function shiftWeek(dir){
-  var next=weekOffset+dir;
-  if(next>0)return;
-  weekOffset=next;
-  var mon=getMondayOfWeek(todayStr(),weekOffset);
-  var sun=addDays(mon,6);
-  var today=todayStr();
-  if(selectedDate<mon||selectedDate>sun)selectedDate=(today>=mon&&today<=sun)?today:sun;
-  animateWeekRow(dir>0?1:-1,buildWeekStrip);
+function shiftWeek(dir) {
+  const next = weekOffset + dir;
+  if (next > 0) return;
+  weekOffset = next;
+  const mon   = getMondayOfWeek(todayStr(), weekOffset);
+  const sun   = addDays(mon, 6);
+  const today = todayStr();
+  if (selectedDate < mon || selectedDate > sun) {
+    selectedDate = (today >= mon && today <= sun) ? today : sun;
+  }
+  animateWeekRow(dir > 0 ? 1 : -1, buildWeekStrip);
   buildDailyContent();
 }
 
-function animateWeekRow(dir,cb){
-  var row=document.getElementById('week-row');
-  var W=document.querySelector('.week-strip').offsetWidth||300;
-  var outX=dir>0?-W:W;
-  var inX=dir>0?W:-W;
-  row.style.transition='transform 0.18s ease,opacity 0.18s ease';
-  row.style.transform='translateX('+outX+'px)';
-  row.style.opacity='0';
-  setTimeout(function(){
+function animateWeekRow(dir, cb) {
+  const row  = document.getElementById('week-row');
+  const W    = document.querySelector('.week-strip').offsetWidth || 300;
+  const outX = dir > 0 ? -W : W;
+  const inX  = dir > 0 ?  W : -W;
+
+  row.style.transition = 'transform 0.18s ease, opacity 0.18s ease';
+  row.style.transform  = `translateX(${outX}px)`;
+  row.style.opacity    = '0';
+
+  setTimeout(() => {
     cb();
-    var r=document.getElementById('week-row');
-    r.style.transition='none';
-    r.style.transform='translateX('+inX+'px)';
-    r.style.opacity='0';
-    requestAnimationFrame(function(){requestAnimationFrame(function(){
-      r.style.transition='transform 0.22s ease,opacity 0.22s ease';
-      r.style.transform='translateX(0)';
-      r.style.opacity='1';
-    })});
-  },180);
+    const r = document.getElementById('week-row');
+    r.style.transition = 'none';
+    r.style.transform  = `translateX(${inX}px)`;
+    r.style.opacity    = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      r.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+      r.style.transform  = 'translateX(0)';
+      r.style.opacity    = '1';
+    }));
+  }, 180);
 }
 
-// Swipe week strip
-(function(){
-  var strip=document.querySelector('.week-strip');
-  var sx=0,sy=0,cx=0,locked=false,axisLocked=false;
-  strip.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;cx=0;locked=false;axisLocked=false;document.getElementById('week-row').style.transition='none';},{passive:true});
-  strip.addEventListener('touchmove',function(e){
-    if(locked)return;
-    var dx=e.touches[0].clientX-sx,dy=e.touches[0].clientY-sy;
-    if(!axisLocked){if(Math.abs(dy)>Math.abs(dx)){locked=true;return;}if(Math.abs(dx)>6)axisLocked=true;}
-    if(!axisLocked)return;
-    cx=dx;
-    if(cx<0&&weekOffset>=0)cx=0;
-    var r=document.getElementById('week-row');
-    r.style.transform='translateX('+cx+'px)';
-    r.style.opacity=String(1-Math.min(Math.abs(cx)/160,0.5));
-  },{passive:true});
-  strip.addEventListener('touchend',function(e){
-    if(locked){locked=false;return;}
-    var W=strip.offsetWidth||300;
-    if(Math.abs(cx)>W*0.25){
-      var back=cx>0;
-      if(!back&&weekOffset>=0){snap();return;}
-      shiftWeek(back?-1:1);
-    } else {snap();}
-    cx=0;axisLocked=false;
-    function snap(){var r=document.getElementById('week-row');r.style.transition='transform 0.2s ease,opacity 0.2s ease';r.style.transform='translateX(0)';r.style.opacity='1';}
-  },{passive:true});
+// Swipe gesture on week strip
+(function initWeekSwipe() {
+  const strip = document.querySelector('.week-strip');
+  let sx = 0, sy = 0, cx = 0, locked = false, axisLocked = false;
+
+  strip.addEventListener('touchstart', e => {
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    cx = 0; locked = false; axisLocked = false;
+    document.getElementById('week-row').style.transition = 'none';
+  }, { passive: true });
+
+  strip.addEventListener('touchmove', e => {
+    if (locked) return;
+    const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+    if (!axisLocked) {
+      if (Math.abs(dy) > Math.abs(dx)) { locked = true; return; }
+      if (Math.abs(dx) > 6) axisLocked = true;
+    }
+    if (!axisLocked) return;
+    cx = dx;
+    if (cx < 0 && weekOffset >= 0) cx = 0;
+    const r = document.getElementById('week-row');
+    r.style.transform = `translateX(${cx}px)`;
+    r.style.opacity   = String(1 - Math.min(Math.abs(cx) / 160, 0.5));
+  }, { passive: true });
+
+  strip.addEventListener('touchend', () => {
+    if (locked) { locked = false; return; }
+    const W = strip.offsetWidth || 300;
+    if (Math.abs(cx) > W * 0.25) {
+      const back = cx > 0;
+      if (!back && weekOffset >= 0) { snap(); return; }
+      shiftWeek(back ? -1 : 1);
+    } else {
+      snap();
+    }
+    cx = 0; axisLocked = false;
+
+    function snap() {
+      const r = document.getElementById('week-row');
+      r.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+      r.style.transform  = 'translateX(0)';
+      r.style.opacity    = '1';
+    }
+  }, { passive: true });
 })();
 
+// ── SVG ICONS (reused) ────────────────────────────────────
+const ICONS = {
+  morning: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--violet2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+  evening: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--violet2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+  check:   `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`,
+  close:   `<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+};
+
+// ── HTML BUILDERS ─────────────────────────────────────────
+function cardHeaderHtml(icon, sub, title) {
+  return `<div class="card-header">
+    <div class="card-header-icon">${icon}</div>
+    <div class="card-header-text">
+      <div class="card-header-sub">${sub}</div>
+      <div class="card-header-title">${title}</div>
+    </div>
+  </div>`;
+}
+
+function energyRowHtml(val, fn) {
+  const btns = [1,2,3,4,5].map(n => {
+    const cls = 'energy-btn' + (n <= val ? ' filled' : '') + (n === val ? ' selected' : '');
+    return `<button class="${cls}" onclick="${fn}(${n})">${n}</button>`;
+  }).join('');
+  return `<div class="energy-row">${btns}</div>`;
+}
+
+function tagHtml(t, field, removable) {
+  const cls = field === 'givers' ? 'positive' : 'negative';
+  const remove = removable
+    ? `<span class="tag-remove" onclick="removeTag('${field}','${escHtml(t)}',event)">${ICONS.close}</span>`
+    : '';
+  return `<div class="tag ${cls}">${escHtml(t)}${remove}</div>`;
+}
+
+function tagSectionHtml(tags, field, removable) {
+  if (!tags.length) return '';
+  return `<div class="tag-list">${tags.map(t => tagHtml(t, field, removable)).join('')}</div>`;
+}
+
 // ── DAILY CONTENT ─────────────────────────────────────────
-var morningIcon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--violet2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
-var eveningIcon='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--violet2)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+function buildDailyContent() {
+  const container = document.getElementById('daily-content');
+  const today     = todayStr();
+  const entry     = getEntry(selectedDate);
+  const isFuture  = selectedDate > today;
+  const isToday   = selectedDate === today;
+  const saved     = isSaved(selectedDate);
+  const isEditing = editingDate === selectedDate || (isToday && !saved);
 
-function cardHeader(icon,sub,title){
-  return'<div class="card-header"><div class="card-header-icon">'+icon+'</div><div class="card-header-text"><div class="card-header-sub">'+sub+'</div><div class="card-header-title">'+title+'</div></div></div>';
-}
-
-function energyRowHtml(val,fn){
-  var h='<div class="energy-row">';
-  for(var n=1;n<=5;n++){
-    var cls='energy-btn e'+n+(n<=val?' filled':'')+(n===val?' selected':'');
-    h+='<button class="'+cls+'" onclick="'+fn+'('+n+')">'+n+'</button>';
+  if (isFuture) {
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p>No entry for this date yet.</p></div>`;
+    return;
   }
-  return h+'</div>';
-}
-
-function buildDailyContent(){
-  var container=document.getElementById('daily-content');
-  var today=todayStr();
-  var isFuture=selectedDate>today;
-  var isToday=selectedDate===today;
-  var entry=getEntry(selectedDate);
-  if(isFuture){container.innerHTML='<div class="empty-state"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><p>No entry for this date yet.</p></div>';return;}
-  var saved=isSavedDate(selectedDate);
-  var isEditing=editingDate===selectedDate||(isToday&&!saved);
-  var hasAny=hasData(selectedDate);
-  if(saved&&!isEditing){buildReadOnly(container,entry);return;}
-  if(!isToday&&hasAny&&editingDate!==selectedDate){buildReadOnly(container,entry);return;}
-  buildEdit(container,entry,isToday);
-}
-
-function buildEdit(container,entry,isToday){
-  var h='';
-  h+='<div class="card">'+cardHeader(morningIcon,'Morning','Start of day check-in');
-  h+='<div class="field-block"><div class="field-label">Energy level</div>'+energyRowHtml(entry.morningEnergy,'setMorning')+'</div>';
-  h+='</div>';
-  h+='<div class="card" style="margin-top:24px">'+cardHeader(eveningIcon,'Evening','End of day reflection');
-  h+='<div class="field-block"><div class="field-label">Energy level</div>'+energyRowHtml(entry.eveningEnergy,'setEvening')+'</div>';
-  h+='<div class="field-block"><div class="field-label" style="color:#6ee7b7">Energy givers</div>';
-  if(entry.givers.length){h+='<div class="tag-list">'+entry.givers.map(function(t){return'<div class="tag positive">'+escHtml(t)+'<span class="tag-remove" onclick="removeTag(\'givers\',\''+escHtml(t)+'\',event)"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div>'}).join('')+'</div>';}
-  h+='<input class="input-field" id="givers-input" placeholder="Add, press Enter…" onkeydown="handleTagKey(event,\'givers\')"></div>';
-  h+='<div class="field-block"><div class="field-label" style="color:#fca5a5">Energy drainers</div>';
-  if(entry.drainers.length){h+='<div class="tag-list">'+entry.drainers.map(function(t){return'<div class="tag negative">'+escHtml(t)+'<span class="tag-remove" onclick="removeTag(\'drainers\',\''+escHtml(t)+'\',event)"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div>'}).join('')+'</div>';}
-  h+='<input class="input-field" id="drainers-input" placeholder="Add, press Enter…" onkeydown="handleTagKey(event,\'drainers\')"></div>';
-  h+='</div>';
-  h+='<button class="save-btn" id="save-btn" onclick="saveEntry()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Save check-in</button>';
-  h+='<div style="height:8px"></div>';
-  container.innerHTML=h;
-}
-
-function buildReadOnly(container,entry){
-  var diff=(entry.morningEnergy>0&&entry.eveningEnergy>0)?entry.eveningEnergy-entry.morningEnergy:null;
-  var diffLabel=diff!==null?(diff>0?'↑ +'+diff:diff<0?'↓ '+diff:'→ 0'):null;
-  var diffColor=diff>0?'#34d399':diff<0?'#f87171':'var(--slate)';
-
-  var dateD=parseDate(selectedDate);
-  var dateLabel=dateD.toLocaleDateString('en-US',{weekday:'long',day:'numeric',month:'long'});
-
-  // Horizontal dumbbell chart
-  function dumbbellSVG(m,ev){
-    var svgW=280,svgH=44,padL=16,padR=16,dotR=6;
-    var trackW=svgW-padL-padR;
-    function xFor(v){return padL+(v-1)/4*trackW;}
-    var mx=xFor(m),ex=xFor(ev);
-    var diff2=ev-m;
-    var stemColor=diff2>0?'#34d399':diff2<0?'#f87171':'var(--slate)';
-    var cy=svgH/2;
-    var parts='';
-    // Track
-    parts+='<line x1="'+padL+'" y1="'+cy+'" x2="'+(padL+trackW)+'" y2="'+cy+'" stroke="rgba(255,255,255,0.07)" stroke-width="2"/>';
-    // Tick marks
-    for(var v=1;v<=5;v++){
-      var tx=xFor(v);
-      parts+='<line x1="'+tx+'" y1="'+(cy-3)+'" x2="'+tx+'" y2="'+(cy+3)+'" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>';
-      parts+='<text x="'+tx+'" y="'+(svgH-2)+'" text-anchor="middle" font-size="8" fill="var(--muted)">'+v+'</text>';
-    }
-    // Stem between dots
-    if(m>0&&ev>0){
-      parts+='<line x1="'+mx+'" y1="'+cy+'" x2="'+ex+'" y2="'+cy+'" stroke="'+stemColor+'" stroke-width="2.5" stroke-linecap="round"/>';
-    }
-    // Morning dot — solid filled
-    if(m>0){
-      parts+='<circle cx="'+mx+'" cy="'+cy+'" r="'+dotR+'" fill="var(--violet)" stroke="var(--card)" stroke-width="1.5"/>';
-    }
-    // Evening dot — outlined
-    if(ev>0){
-      parts+='<circle cx="'+ex+'" cy="'+cy+'" r="'+(dotR-1)+'" fill="var(--card)" stroke="var(--violet2)" stroke-width="2"/>';
-    }
-    return'<svg viewBox="0 0 '+svgW+' '+svgH+'" width="100%" style="display:block;overflow:visible">'+parts+'</svg>';
-  }
-
-  var h='<div class="card">';
-  // Header row: date + delta badge
-  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-  h+='<div style="font-size:18px;font-weight:600;color:var(--white)">'+dateLabel+'</div>';
-  if(diffLabel)h+='<div style="background:var(--navy3);border:0.5px solid var(--border2);border-radius:var(--radius-xs);padding:6px 12px;font-size:13px;font-weight:600;color:'+diffColor+'">'+diffLabel+'</div>';
-  h+='</div>';
-
-  // Dumbbell chart
-  if(entry.morningEnergy>0||entry.eveningEnergy>0){
-    h+='<div style="margin-bottom:4px">';
-    h+='<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.07em">';
-    h+='<div style="display:flex;align-items:center;gap:5px"><div style="width:7px;height:7px;border-radius:50%;background:var(--violet)"></div>Morning</div>';
-    h+='<div style="display:flex;align-items:center;gap:5px">Evening<div style="width:7px;height:7px;border-radius:50%;background:var(--card);border:1.5px solid var(--violet2)"></div></div>';
-    h+='</div>';
-    h+=dumbbellSVG(entry.morningEnergy,entry.eveningEnergy);
-    h+='</div><div style="height:12px"></div>';
+  if ((saved || (!isToday && hasData(selectedDate))) && !isEditing) {
+    buildReadOnly(container, entry);
   } else {
-    h+='<div class="ro-empty">No energy logged</div>';
-  }
-
-  // Drainers
-  if(entry.drainers.length){
-    h+='<div style="margin-top:20px;margin-bottom:14px">';
-    h+='<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);font-weight:600;margin-bottom:8px">Drainers</div>';
-    h+='<div class="tag-list" style="margin-bottom:0">'+entry.drainers.map(function(t){return'<div class="tag negative">'+escHtml(t)+'</div>'}).join('')+'</div>';
-    h+='</div>';
-  }
-
-  // Givers
-  if(entry.givers.length){
-    h+='<div style="margin-top:20px;margin-bottom:14px">';
-    h+='<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);font-weight:600;margin-bottom:8px">Givers</div>';
-    h+='<div class="tag-list" style="margin-bottom:0">'+entry.givers.map(function(t){return'<div class="tag positive">'+escHtml(t)+'</div>'}).join('')+'</div>';
-    h+='</div>';
-  }
-
-  if(!entry.morningEnergy&&!entry.eveningEnergy&&!entry.givers.length&&!entry.drainers.length)h+='<div class="ro-empty">Nothing logged</div>';
-
-  h+='</div>';
-  h+='<button class="save-btn" style="background:var(--card);border:0.5px solid var(--border2);color:var(--slate2);" onclick="startEditing()"> Edit</button>';
-  h+='<div style="height:8px"></div>';
-  container.innerHTML=h;
-}
-
-function saveEntry(){
-  savedDates.push(selectedDate);save();editingDate=null;
-  var btn=document.getElementById('save-btn');
-  if(btn){btn.classList.add('saved');btn.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Saved';setTimeout(function(){buildDailyContent();buildWeekStrip();},1200);}
-  else{buildDailyContent();buildWeekStrip();}
-}
-function startEditing(){editingDate=selectedDate;buildDailyContent();}
-function setMorning(n){var e=getEntry(selectedDate);e.morningEnergy=e.morningEnergy===n?0:n;save();buildDailyContent();buildWeekStrip();}
-function setEvening(n){var e=getEntry(selectedDate);e.eveningEnergy=e.eveningEnergy===n?0:n;save();buildDailyContent();buildWeekStrip();}
-function setField(f,v){var e=getEntry(selectedDate);e[f]=v;save();}
-function handleTagKey(ev,field){
-  if(ev.key==='Enter'||ev.key===','){
-    ev.preventDefault();
-    var val=ev.target.value.trim().replace(/,$/,'').trim();
-    if(!val)return;
-    var e=getEntry(selectedDate);
-    if(e[field].indexOf(val)<0){e[field].push(val);save();buildDailyContent();}
-    var inputId=field==='givers'?'givers-input':'drainers-input';
-    setTimeout(function(){var el=document.getElementById(inputId);if(el)el.focus();},0);
+    buildEdit(container, entry);
   }
 }
-function removeTag(field,val,ev){
+
+function buildEdit(container, entry) {
+  const giverTags   = tagSectionHtml(entry.givers,   'givers',   true);
+  const drainerTags = tagSectionHtml(entry.drainers, 'drainers', true);
+
+  container.innerHTML = `
+    <div class="card">
+      ${cardHeaderHtml(ICONS.morning, 'Morning', 'Start of day check-in')}
+      <div class="field-block">
+        <div class="field-label">Energy level</div>
+        ${energyRowHtml(entry.morningEnergy, 'setMorning')}
+      </div>
+    </div>
+    <div class="card" style="margin-top:24px">
+      ${cardHeaderHtml(ICONS.evening, 'Evening', 'End of day reflection')}
+      <div class="field-block">
+        <div class="field-label">Energy level</div>
+        ${energyRowHtml(entry.eveningEnergy, 'setEvening')}
+      </div>
+      <div class="field-block">
+        <div class="field-label" style="color:#7fb3a3">Energy givers</div>
+        ${giverTags}
+        <input class="input-field" id="givers-input" placeholder="Add, press Enter…" onkeydown="handleTagKey(event,'givers')">
+      </div>
+      <div class="field-block">
+        <div class="field-label" style="color:#e8c87a">Energy drainers</div>
+        ${drainerTags}
+        <input class="input-field" id="drainers-input" placeholder="Add, press Enter…" onkeydown="handleTagKey(event,'drainers')">
+      </div>
+    </div>
+    <button class="save-btn" id="save-btn" onclick="saveEntry()">${ICONS.check} Save check-in</button>
+    <div style="height:8px"></div>`;
+}
+
+function buildReadOnly(container, entry) {
+  const m    = entry.morningEnergy || 0;
+  const ev   = entry.eveningEnergy || 0;
+  const diff = (m > 0 && ev > 0) ? ev - m : null;
+
+  const diffColor = diff === null ? 'var(--slate)' : diff > 0 ? '#7fb3a3' : diff < 0 ? 'var(--red)' : 'var(--slate)';
+  const dateLabel = parseDate(selectedDate).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  const deltaBadge = diff !== null
+    ? `<div style="background:var(--card2);border:0.5px solid var(--border);border-radius:var(--radius-xs);padding:6px 12px;font-size:13px;font-weight:600;color:${diffColor}">${diff > 0 ? '↑' : diff < 0 ? '↓' : '→'} ${diff > 0 ? '+' : ''}${diff}</div>`
+    : '';
+
+  const energySection = (m > 0 || ev > 0) ? `
+    <div style="margin-bottom:4px">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.07em">
+        <div style="display:flex;align-items:center;gap:5px"><div style="width:7px;height:7px;border-radius:50%;background:var(--violet)"></div>Morning</div>
+        <div style="display:flex;align-items:center;gap:5px">Evening<div style="width:7px;height:7px;border-radius:50%;background:var(--card);border:1.5px solid var(--violet2)"></div></div>
+      </div>
+      ${dumbbellSVG(m, ev)}
+    </div><div style="height:12px"></div>`
+    : `<div class="ro-empty">No energy logged</div>`;
+
+  const nothingLogged = (!m && !ev && !entry.givers.length && !entry.drainers.length)
+    ? `<div class="ro-empty">Nothing logged</div>` : '';
+
+  container.innerHTML = `
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:18px;font-weight:600;color:var(--white)">${dateLabel}</div>
+        ${deltaBadge}
+      </div>
+      ${energySection}
+      ${entry.drainers.length ? `<div style="margin-top:20px;margin-bottom:14px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);font-weight:600;margin-bottom:8px">Drainers</div>${tagSectionHtml(entry.drainers,'drainers',false)}</div>` : ''}
+      ${entry.givers.length   ? `<div style="margin-top:20px;margin-bottom:14px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);font-weight:600;margin-bottom:8px">Givers</div>${tagSectionHtml(entry.givers,'givers',false)}</div>` : ''}
+      ${nothingLogged}
+    </div>
+    <button class="secondary-btn" onclick="startEditing()"> Edit</button>
+    <div style="height:8px"></div>`;
+}
+
+// ── DUMBBELL SVG (read-only card) ─────────────────────────
+function dumbbellSVG(m, ev) {
+  if (!m && !ev) return '';
+  const svgW = 300, svgH = 60, padL = 20, padR = 20, padT = 10, padB = 24;
+  const trackW = svgW - padL - padR;
+  const cy     = padT + 8;
+  const xFor   = v => padL + (v - 1) / 4 * trackW;
+  let parts    = '';
+
+  // Track
+  parts += `<line x1="${padL}" y1="${cy}" x2="${padL + trackW}" y2="${cy}" stroke="rgba(255,255,255,0.08)" stroke-width="2" stroke-linecap="round"/>`;
+
+  // Tick marks + labels
+  for (let v = 1; v <= 5; v++) {
+    const tx = xFor(v);
+    parts += `<line x1="${tx}" y1="${cy-3}" x2="${tx}" y2="${cy+3}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>`;
+    parts += `<text x="${tx}" y="${padT+padB+10}" text-anchor="middle" font-size="9" fill="var(--muted)">${v}</text>`;
+  }
+
+  const dotR = 5;
+  if (m > 0 && ev > 0) {
+    const mx = xFor(m), ex = xFor(ev), diff = ev - m;
+    if (diff === 0) {
+      parts += `<circle cx="${mx}" cy="${cy}" r="${dotR}" fill="var(--violet)" stroke="#0A0A0A" stroke-width="1.5"/>`;
+    } else {
+      const lineColor = diff > 0 ? '#7fb3a3' : '#e8c87a';
+      const goRight   = ex > mx;
+      const aSize     = 7;
+      const tipX      = goRight ? ex - dotR : ex + dotR;
+      const x1        = goRight ? mx + dotR : mx - dotR;
+      const al1 = goRight
+        ? `M${tipX} ${cy} L${tipX - aSize} ${cy - aSize/1.5}`
+        : `M${tipX} ${cy} L${tipX + aSize} ${cy - aSize/1.5}`;
+      const al2 = goRight
+        ? `M${tipX} ${cy} L${tipX - aSize} ${cy + aSize/1.5}`
+        : `M${tipX} ${cy} L${tipX + aSize} ${cy + aSize/1.5}`;
+
+      parts += `<line x1="${x1}" y1="${cy}" x2="${tipX}" y2="${cy}" stroke="${lineColor}" stroke-width="2.5" stroke-linecap="round"/>`;
+      parts += `<path d="${al1}" fill="none" stroke="${lineColor}" stroke-width="2.5" stroke-linecap="round"/>`;
+      parts += `<path d="${al2}" fill="none" stroke="${lineColor}" stroke-width="2.5" stroke-linecap="round"/>`;
+      parts += `<circle cx="${mx}" cy="${cy}" r="${dotR}" fill="var(--violet)" stroke="#0A0A0A" stroke-width="1.5"/>`;
+      parts += `<circle cx="${ex}" cy="${cy}" r="${dotR-1}" fill="#0A0A0A" stroke="var(--violet2)" stroke-width="2"/>`;
+    }
+  } else if (m > 0) {
+    parts += `<circle cx="${xFor(m)}" cy="${cy}" r="5" fill="var(--violet)" stroke="#0A0A0A" stroke-width="1.5" opacity="0.6"/>`;
+  } else if (ev > 0) {
+    parts += `<circle cx="${xFor(ev)}" cy="${cy}" r="4" fill="#0A0A0A" stroke="var(--violet2)" stroke-width="2" opacity="0.6"/>`;
+  }
+
+  return `<svg viewBox="0 0 ${svgW} ${svgH}" width="100%" style="display:block;overflow:visible">${parts}</svg>`;
+}
+
+// ── DAILY INTERACTIONS ────────────────────────────────────
+function saveEntry() {
+  if (!savedDates.includes(selectedDate)) savedDates.push(selectedDate);
+  save();
+  editingDate = null;
+  const btn = document.getElementById('save-btn');
+  if (btn) {
+    btn.classList.add('saved');
+    btn.innerHTML = `${ICONS.check} Saved`;
+    setTimeout(() => { buildDailyContent(); buildWeekStrip(); }, 1200);
+  } else {
+    buildDailyContent(); buildWeekStrip();
+  }
+}
+
+function startEditing() { editingDate = selectedDate; buildDailyContent(); }
+
+function setMorning(n) { const e = getEntry(selectedDate); e.morningEnergy = e.morningEnergy === n ? 0 : n; save(); buildDailyContent(); buildWeekStrip(); }
+function setEvening(n) { const e = getEntry(selectedDate); e.eveningEnergy = e.eveningEnergy === n ? 0 : n; save(); buildDailyContent(); buildWeekStrip(); }
+
+function handleTagKey(ev, field) {
+  if (ev.key !== 'Enter' && ev.key !== ',') return;
+  ev.preventDefault();
+  const val = ev.target.value.trim().replace(/,$/, '').trim();
+  if (!val) return;
+  const e = getEntry(selectedDate);
+  if (!e[field].includes(val)) { e[field].push(val); save(); buildDailyContent(); }
+  setTimeout(() => { const el = document.getElementById(`${field}-input`); if (el) el.focus(); }, 0);
+}
+
+function removeTag(field, val, ev) {
   ev.stopPropagation();
-  var e=getEntry(selectedDate);
-  e[field]=e[field].filter(function(t){return t!==val});
-  save();buildDailyContent();
-  var inputId=field==='givers'?'givers-input':'drainers-input';
-  setTimeout(function(){var el=document.getElementById(inputId);if(el)el.focus();},0);
+  const e = getEntry(selectedDate);
+  e[field] = e[field].filter(t => t !== val);
+  save(); buildDailyContent();
+  setTimeout(() => { const el = document.getElementById(`${field}-input`); if (el) el.focus(); }, 0);
 }
 
 // ── INSIGHTS ──────────────────────────────────────────────
-function setInsightRange(r){insightRange=r;insightOffset=0;insightSelectedDate=null;document.getElementById('itab-week').classList.toggle('active',r==='week');document.getElementById('itab-month').classList.toggle('active',r==='month');buildInsights();}
-function shiftInsight(dir){insightOffset+=dir;if(insightOffset>0)insightOffset=0;insightSelectedDate=null;buildInsights();}
-function selectInsightDate(d){insightSelectedDate=d===insightSelectedDate?null:d;buildInsights();}
+function setInsightTab(tab) {
+  insightTab = tab;
+  insightSelectedDate = null;
+  buildInsights();
+}
 
-function getInsightRange(){
-  var today=todayStr();
-  if(insightRange==='week'){
-    var mon=getMondayOfWeek(today,insightOffset);
-    var range=[];for(var i=0;i<7;i++)range.push(addDays(mon,i));
-    return{range:range,start:mon,end:addDays(mon,6)};
+function setInsightRange(r) {
+  insightRange = r;
+  insightOffset = 0;
+  insightSelectedDate = null;
+  document.getElementById('itab-week').classList.toggle('active',  r === 'week');
+  document.getElementById('itab-month').classList.toggle('active', r === 'month');
+  buildInsights();
+}
+
+function shiftInsight(dir) {
+  insightOffset += dir;
+  if (insightOffset > 0) insightOffset = 0;
+  insightSelectedDate = null;
+  buildInsights();
+}
+
+function selectInsightDate(d) {
+  insightSelectedDate = d === insightSelectedDate ? null : d;
+  buildInsights();
+}
+
+function getInsightRange() {
+  const today = todayStr();
+  if (insightRange === 'week') {
+    const mon   = getMondayOfWeek(today, insightOffset);
+    const range = Array.from({ length: 7 }, (_, i) => addDays(mon, i));
+    return { range, start: mon, end: addDays(mon, 6) };
   } else {
-    var d=new Date();d.setDate(1);d.setMonth(d.getMonth()+insightOffset);
-    var y=d.getFullYear(),m=d.getMonth();
-    var days=new Date(y,m+1,0).getDate();
-    var range=[];
-    for(var i=1;i<=days;i++)range.push(y+'-'+String(m+1).padStart(2,'0')+'-'+String(i).padStart(2,'0'));
-    return{range:range,start:range[0],end:range[range.length-1]};
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + insightOffset);
+    const y = d.getFullYear(), mo = d.getMonth();
+    const days  = new Date(y, mo + 1, 0).getDate();
+    const range = Array.from({ length: days }, (_, i) => `${y}-${String(mo+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`);
+    return { range, start: range[0], end: range[range.length - 1] };
   }
 }
 
-function buildInsights(){
-  var ri=getInsightRange();
-  var range=ri.range,start=ri.start,end=ri.end;
-  var today=todayStr();
-  var s=parseDate(start),e=parseDate(end);
-  function fmtM(d){return d.toLocaleDateString('en-US',{month:'short'})}
-  var label=insightRange==='week'
-    ?(s.getMonth()===e.getMonth()?fmtM(s)+' '+s.getDate()+'–'+e.getDate()+', '+s.getFullYear():fmtM(s)+' '+s.getDate()+' – '+fmtM(e)+' '+e.getDate()+', '+e.getFullYear())
-    :s.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  document.getElementById('insight-period-label').textContent=label;
-  var nextBtn=document.getElementById('insight-next-btn');
-  if(nextBtn)nextBtn.disabled=insightOffset>=0;
+function buildInsights() {
+  const { range, start, end } = getInsightRange();
+  const today = todayStr();
 
-  var c=document.getElementById('insights-content');
-  var inRange=range.map(function(d){var o={date:d};var ex=entries[d]||{};for(var k in ex)o[k]=ex[k];return o;});
-  var withMorning=inRange.filter(function(e){return e.morningEnergy>0});
-  var withEvening=inRange.filter(function(e){return e.eveningEnergy>0});
-  var withBoth=inRange.filter(function(e){return e.morningEnergy>0&&e.eveningEnergy>0});
+  // Period label
+  const s = parseDate(start), e = parseDate(end);
+  const label = insightRange === 'week'
+    ? fmtDateRange(start, end) + ', ' + s.getFullYear()
+    : s.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('insight-period-label').textContent = label;
+  const nextBtn = document.getElementById('insight-next-btn');
+  if (nextBtn) nextBtn.disabled = insightOffset >= 0;
 
-  if(!withMorning.length&&!withEvening.length){
-    c.innerHTML='<div class="empty-state"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>No entries yet in this period.</p></div>';
-    return;
+  const c = document.getElementById('insights-content');
+
+  const inRange     = range.map(d => ({ date: d, ...getEntry(d) }));
+  const withMorning = inRange.filter(e => e.morningEnergy > 0);
+  const withEvening = inRange.filter(e => e.eveningEnergy > 0);
+  const withBoth    = inRange.filter(e => e.morningEnergy > 0 && e.eveningEnergy > 0);
+
+  const avgMorning = withMorning.length ? avg(withMorning.map(e => e.morningEnergy)) : null;
+  const avgEvening = withEvening.length ? avg(withEvening.map(e => e.eveningEnergy)) : null;
+  const avgDiff    = withBoth.length    ? avg(withBoth.map(e => e.eveningEnergy - e.morningEnergy)) : null;
+
+  const hasChartData = withMorning.length > 0 || withEvening.length > 0;
+  let html = hasChartData
+    ? buildTrendChart(range, today, avgMorning, avgEvening, avgDiff)
+    : `<div class="empty-state" style="padding:32px 32px 40px"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>No entries in this period.</p></div>`;
+
+  // Tab bar
+  html += `<div style="display:flex;margin:4px 16px 16px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-xs);padding:3px;gap:2px">
+    <button onclick="setInsightTab('entries')"  style="flex:1;padding:7px;font-size:12px;font-weight:${insightTab==='entries' ?'600':'500'};font-family:'DM Sans',sans-serif;border:none;border-radius:6px;cursor:pointer;background:${insightTab==='entries' ?'var(--violet)':'transparent'};color:${insightTab==='entries' ?'#fff':'var(--slate)'};transition:all 0.18s">Entries</button>
+    <button onclick="setInsightTab('patterns')" style="flex:1;padding:7px;font-size:12px;font-weight:${insightTab==='patterns'?'600':'500'};font-family:'DM Sans',sans-serif;border:none;border-radius:6px;cursor:pointer;background:${insightTab==='patterns'?'var(--violet)':'transparent'};color:${insightTab==='patterns'?'#fff':'var(--slate)'};transition:all 0.18s">Patterns</button>
+  </div>`;
+
+  if (insightTab === 'patterns') {
+    if (insightSelectedDate) {
+      html += buildDayDetailCards(insightSelectedDate);
+    } else {
+      html += buildCorrelationCards();
+    }
+  } else if (insightTab === 'entries') {
+    html += buildEntriesTab(range);
   }
 
-  var avgMorning=withMorning.length?avg(withMorning.map(function(e){return e.morningEnergy})):null;
-  var avgEvening=withEvening.length?avg(withEvening.map(function(e){return e.eveningEnergy})):null;
-  var avgDiff=withBoth.length?avg(withBoth.map(function(e){return e.eveningEnergy-e.morningEnergy})):null;
+  html += `<div style="height:8px"></div>`;
+  c.innerHTML = html;
+}
 
-  // ── SMOOTH AREA CHART ──
-  var svgW=360,svgH=190,padL=16,padR=8,padT=16,padB=30;
-  var plotW=svgW-padL-padR,plotH=svgH-padT-padB;
-  var n=range.length;
-  var stepX=plotW/(n>1?n-1:1);
-  function yFor(val){return padT+plotH-(val-1)/4*plotH;}
-  var dotR=insightRange==='week'?6:4;
-  var stemW=insightRange==='week'?dotR*2:dotR*2;
-  var svgParts='<defs>';
+// ── TREND CHART ───────────────────────────────────────────
+function buildTrendChart(range, today, avgMorning, avgEvening, avgDiff) {
+  const svgW = 360, svgH = 190, padL = 16, padR = 8, padT = 16, padB = 30;
+  const plotW = svgW - padL - padR;
+  const plotH = svgH - padT - padB;
+  const n     = range.length;
+  const stepX = plotW / (n > 1 ? n - 1 : 1);
+  const yFor  = val => padT + plotH - (val - 1) / 4 * plotH;
+  const dotR  = insightRange === 'week' ? 6 : 4;
+  const stemW = dotR * 2;
 
-  // Collect morning and evening point arrays (x, y, hasData)
-  var mPts=[],ePts=[];
-  range.forEach(function(d,i){
-    var ex=entries[d]||{};
-    var cx=padL+i*stepX;
-    mPts.push({x:cx,y:ex.morningEnergy>0?yFor(ex.morningEnergy):null,v:ex.morningEnergy||0});
-    ePts.push({x:cx,y:ex.eveningEnergy>0?yFor(ex.eveningEnergy):null,v:ex.eveningEnergy||0});
-  });
-
-  // Monotone cubic spline — never overshoots, no weird curves
-  function smoothPath(pts){
-    if(!pts||pts.length<2)return null;
-    var n=pts.length;
-    // Compute slopes
-    var dx=[],dy=[],slope=[];
-    for(var i=0;i<n-1;i++){
-      dx[i]=pts[i+1].x-pts[i].x;
-      dy[i]=pts[i+1].y-pts[i].y;
-      slope[i]=dy[i]/dx[i];
-    }
-    // Tangents
-    var m=[];
-    m[0]=slope[0];
-    for(var i=1;i<n-1;i++){
-      if(slope[i-1]*slope[i]<=0){m[i]=0;}
-      else{m[i]=(slope[i-1]+slope[i])/2;}
-    }
-    m[n-1]=slope[n-2];
-    // Monotonicity constraint
-    for(var i=0;i<n-1;i++){
-      if(slope[i]===0){m[i]=0;m[i+1]=0;}
-      else{
-        var a=m[i]/slope[i],b=m[i+1]/slope[i];
-        var h=Math.sqrt(a*a+b*b);
-        if(h>3){m[i]=3*slope[i]/h*a;m[i+1]=3*slope[i]/h*b;}
-      }
-    }
-    // Build path
-    var d='M'+pts[0].x.toFixed(2)+' '+pts[0].y.toFixed(2);
-    for(var i=0;i<n-1;i++){
-      var x0=pts[i].x,y0=pts[i].y,x1=pts[i+1].x,y1=pts[i+1].y;
-      var h=dx[i];
-      d+=' C'+(x0+h/3).toFixed(2)+' '+(y0+m[i]*h/3).toFixed(2)+' '+
-            (x1-h/3).toFixed(2)+' '+(y1-m[i+1]*h/3).toFixed(2)+' '+
-            x1.toFixed(2)+' '+y1.toFixed(2);
-    }
-    return d;
-  }
-
-  function catmullPath(pts){
-    var valid=pts.filter(function(p){return p.y!==null});
-    return smoothPath(valid);
-  }
-
-  var mPath=catmullPath(mPts);
-  var ePath=catmullPath(ePts);
-
-  // Build filled area between curves with green/red split
-  // We approximate by drawing the whole area and clipping with two rects
-  var eValid=ePts.filter(function(p){return p.y!==null});
-  var mValid=mPts.filter(function(p){return p.y!==null});
-
-  svgParts+='</defs>';
+  let svg = '';
 
   // Grid lines
-  [1,2,3,4,5].forEach(function(v){
-    var y=yFor(v);
-    svgParts+='<line x1="'+padL+'" y1="'+y+'" x2="'+(padL+plotW)+'" y2="'+y+'" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
-    svgParts+='<text x="2" y="'+(y-3)+'" text-anchor="start" font-size="9" fill="var(--muted)">'+v+'</text>';
+  [1, 2, 3, 4, 5].forEach(v => {
+    const y = yFor(v);
+    svg += `<line x1="${padL}" y1="${y}" x2="${padL + plotW}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    svg += `<text x="2" y="${y - 3}" text-anchor="start" font-size="9" fill="var(--muted)">${v}</text>`;
   });
 
-  // Stems and dots per day
-  range.forEach(function(d,i){
-    var ex=entries[d]||{};
-    var m=ex.morningEnergy||0;
-    var ev=ex.eveningEnergy||0;
-    var cx=padL+i*stepX;
-    var isToday=d===today;
-    var isSel=d===insightSelectedDate;
-    var showLbl=insightRange==='week'||(i%Math.ceil(n/7)===0);
+  // Per-day stems + dots
+  range.forEach((d, i) => {
+    const ex     = entries[d] || {};
+    const m      = ex.morningEnergy || 0;
+    const ev     = ex.eveningEnergy || 0;
+    const cx     = padL + i * stepX;
+    const isToday = d === today;
+    const isSel  = d === insightSelectedDate;
+    const showLbl = insightRange === 'week' || i % Math.ceil(n / 7) === 0;
 
-    if(showLbl){
-      var lbl=insightRange==='week'?fmtDay(d).charAt(0):String(fmtDayNum(d));
-      svgParts+='<text x="'+cx+'" y="'+(svgH-6)+'" text-anchor="middle" font-size="9" fill="'+(isToday?'var(--white)':'var(--muted)')+'" font-weight="'+(isSel||isToday?'700':'400')+'">'+lbl+'</text>';
+    if (showLbl) {
+      const lbl = insightRange === 'week' ? fmtDay(d).charAt(0) : String(fmtDayNum(d));
+      svg += `<text x="${cx}" y="${svgH - 6}" text-anchor="middle" font-size="9" fill="${isToday ? 'var(--white)' : 'var(--muted)'}" font-weight="${isSel || isToday ? '700' : '400'}">${lbl}</text>`;
     }
 
-    svgParts+='<rect x="'+(cx-10)+'" y="'+padT+'" width="20" height="'+plotH+'" fill="transparent" style="cursor:pointer" onclick="selectInsightDate(\''+d+'\')"/>';
+    svg += `<rect x="${cx - 10}" y="${padT}" width="20" height="${plotH}" fill="transparent" style="cursor:pointer" onclick="selectInsightDate('${d}')"/>`;
 
-    if(m>0&&ev>0){
-      var my=yFor(m),evy=yFor(ev);
-      var diff=ev-m;
-      var stemColor=diff>0?'#34d399':diff<0?'#f87171':'var(--slate)';
-      // Dashed vertical stem
-      svgParts+='<line x1="'+cx+'" y1="'+my+'" x2="'+cx+'" y2="'+evy+'" stroke="'+stemColor+'" stroke-width="'+stemW+'" stroke-linecap="round" opacity="0.8"/>';
-      // Morning dot — solid
-      svgParts+='<circle cx="'+cx+'" cy="'+my+'" r="'+(isSel?dotR+1.5:dotR)+'" fill="var(--violet)" stroke="var(--card)" stroke-width="1.5"/>';
-      // Evening dot — outlined, radius compensated for stroke so outer edge matches morning
-      svgParts+='<circle cx="'+cx+'" cy="'+evy+'" r="'+(isSel?dotR+0.5:dotR-1)+'" fill="var(--card)" stroke="var(--violet2)" stroke-width="2"/>';
-    } else if(m>0){
-      svgParts+='<circle cx="'+cx+'" cy="'+yFor(m)+'" r="'+dotR+'" fill="var(--violet)" stroke="var(--card)" stroke-width="1.5" opacity="0.5"/>';
-    } else if(ev>0){
-      svgParts+='<circle cx="'+cx+'" cy="'+yFor(ev)+'" r="'+dotR+'" fill="var(--card)" stroke="var(--violet2)" stroke-width="2" opacity="0.5"/>';
+    if (m > 0 && ev > 0) {
+      const my = yFor(m), evy = yFor(ev), diff = ev - m;
+      const stemColor = diff > 0 ? '#7fb3a3' : diff < 0 ? '#e8c87a' : 'var(--slate)';
+      svg += `<line x1="${cx}" y1="${my}" x2="${cx}" y2="${evy}" stroke="${stemColor}" stroke-width="${stemW}" stroke-linecap="round" opacity="0.8"/>`;
+      svg += `<circle cx="${cx}" cy="${my}"  r="${isSel ? dotR + 1.5 : dotR}" fill="var(--violet)"  stroke="#0A0A0A" stroke-width="1.5"/>`;
+      svg += `<circle cx="${cx}" cy="${evy}" r="${isSel ? dotR + 0.5 : dotR - 1}" fill="#0A0A0A" stroke="var(--violet2)" stroke-width="2"/>`;
+    } else if (m > 0) {
+      svg += `<circle cx="${cx}" cy="${yFor(m)}"  r="${dotR}" fill="var(--violet)"  stroke="#0A0A0A" stroke-width="1.5" opacity="0.5"/>`;
+    } else if (ev > 0) {
+      svg += `<circle cx="${cx}" cy="${yFor(ev)}" r="${dotR}" fill="#0A0A0A" stroke="var(--violet2)" stroke-width="2" opacity="0.5"/>`;
     }
   });
 
-  var html='<div class="chart-card">';
-  html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
-  html+='<div class="chart-title" style="margin-bottom:0">Energy per day</div>';
-  html+='<div style="display:flex;gap:12px">';
-  html+='<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--slate)"><div style="width:8px;height:8px;border-radius:50%;background:var(--violet)"></div>Morning</div>';
-  html+='<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--slate)"><div style="width:8px;height:8px;border-radius:50%;background:var(--navy);border:1.5px solid var(--violet2)"></div>Evening</div>';
-  html+='</div></div>';
-  html+='<svg viewBox="0 0 '+svgW+' '+svgH+'" width="100%" style="overflow:visible;display:block">'+svgParts+'</svg>';
-  html+='<div class="chart-stats" style="margin-top:12px">';
-  html+='<div class="chart-stat"><span class="chart-stat-val">'+(avgMorning!==null?avgMorning.toFixed(1):'—')+'</span><span class="chart-stat-label">Avg morning</span></div>';
-  html+='<div class="chart-stat-divider"></div>';
-  html+='<div class="chart-stat"><span class="chart-stat-val">'+(avgEvening!==null?avgEvening.toFixed(1):'—')+'</span><span class="chart-stat-label">Avg evening</span></div>';
-  html+='<div class="chart-stat-divider"></div>';
-  html+='<div class="chart-stat"><span class="chart-stat-val'+(avgDiff!==null?(avgDiff>=0?' positive':' negative'):'')+'">'+(avgDiff!==null?(avgDiff>=0?'+':'')+avgDiff.toFixed(1):'—')+'</span><span class="chart-stat-label">Avg shift</span></div>';
-  html+='</div></div>';
+  const avgDiffClass = avgDiff === null ? '' : avgDiff >= 0 ? ' positive' : ' negative';
+  const avgDiffVal   = avgDiff === null ? '—' : (avgDiff >= 0 ? '+' : '') + avgDiff.toFixed(1);
 
-  if(insightSelectedDate){
-    var se=entries[insightSelectedDate]||{};
-    var sd=parseDate(insightSelectedDate);
-    var sdLabel=sd.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-    html+='<div class="day-detail-header"><span class="day-detail-date">'+sdLabel+'</span><button class="day-detail-close" onclick="selectInsightDate(null)"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
-    var sg=se.givers||[],sd2=se.drainers||[];
-    if(sg.length)html+='<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy givers</div><div class="tag-list">'+sg.map(function(t){return'<div class="tag positive">'+escHtml(t)+'</div>'}).join('')+'</div></div>';
-    if(sd2.length)html+='<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy drainers</div><div class="tag-list">'+sd2.map(function(t){return'<div class="tag negative">'+escHtml(t)+'</div>'}).join('')+'</div></div>';
-    if(!sg.length&&!sd2.length)html+='<div class="card" style="padding:16px 20px"><div class="ro-empty">No givers or drainers logged.</div></div>';
-  } else {
-    var allWithBoth=Object.keys(entries).map(function(d){var o={date:d};var ex=entries[d];for(var k in ex)o[k]=ex[k];return o;}).filter(function(e){return e.morningEnergy>0&&e.eveningEnergy>0});
-    var allGivers={},allDrainers={};
-    allWithBoth.forEach(function(e){(e.givers||[]).forEach(function(g){allGivers[g]=true});(e.drainers||[]).forEach(function(d){allDrainers[d]=true})});
+  return `<div class="chart-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="chart-title" style="margin-bottom:0">Energy per day</div>
+      <div style="display:flex;gap:12px">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--slate)"><div style="width:8px;height:8px;border-radius:50%;background:var(--violet)"></div>Morning</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--slate)"><div style="width:8px;height:8px;border-radius:50%;background:var(--navy);border:1.5px solid var(--violet2)"></div>Evening</div>
+      </div>
+    </div>
+    <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" style="overflow:visible;display:block">${svg}</svg>
+    <div class="chart-stats" style="margin-top:12px">
+      <div class="chart-stat"><span class="chart-stat-val">${avgMorning !== null ? avgMorning.toFixed(1) : '—'}</span><span class="chart-stat-label">Avg morning</span></div>
+      <div class="chart-stat-divider"></div>
+      <div class="chart-stat"><span class="chart-stat-val">${avgEvening !== null ? avgEvening.toFixed(1) : '—'}</span><span class="chart-stat-label">Avg evening</span></div>
+      <div class="chart-stat-divider"></div>
+      <div class="chart-stat"><span class="chart-stat-val${avgDiffClass}">${avgDiffVal}</span><span class="chart-stat-label">Avg shift</span></div>
+    </div>
+  </div>`;
+}
 
-    function computeCorr(name,field){
-      var w=allWithBoth.filter(function(e){return(e[field]||[]).indexOf(name)>=0});
-      var wo=allWithBoth.filter(function(e){return(e[field]||[]).indexOf(name)<0});
-      if(!w.length)return null;
-      var aW=avg(w.map(function(e){return e.eveningEnergy-e.morningEnergy}));
-      var aWo=wo.length?avg(wo.map(function(e){return e.eveningEnergy-e.morningEnergy})):0;
-      return{name:name,impact:aW-aWo,n:w.length,avgWith:aW};
-    }
+// ── DAY DETAIL CARDS ──────────────────────────────────────
+function buildDayDetailCards(date) {
+  const se      = entries[date] || {};
+  const sdLabel = parseDate(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const g       = se.givers   || [];
+  const dr      = se.drainers || [];
+  let html = `<div class="day-detail-header"><span class="day-detail-date">${sdLabel}</span><button class="day-detail-close" onclick="selectInsightDate(null)">${ICONS.close}</button></div>`;
+  if (g.length)  html += `<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy givers</div>${tagSectionHtml(g, 'givers', false)}</div>`;
+  if (dr.length) html += `<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy drainers</div>${tagSectionHtml(dr, 'drainers', false)}</div>`;
+  if (!g.length && !dr.length) html += `<div class="card" style="padding:16px 20px"><div class="ro-empty">No givers or drainers logged.</div></div>`;
+  return html;
+}
 
-    var boosters=Object.keys(allGivers).map(function(n){return computeCorr(n,'givers')}).filter(Boolean).sort(function(a,b){return b.impact-a.impact}).slice(0,6);
-    var drains=Object.keys(allDrainers).map(function(n){return computeCorr(n,'drainers')}).filter(Boolean).sort(function(a,b){return a.impact-b.impact}).slice(0,6);
+// ── CORRELATION CARDS ─────────────────────────────────────
+function buildCorrelationCards() {
+  const withBoth = Object.entries(entries)
+    .filter(([, e]) => e.morningEnergy > 0 && e.eveningEnergy > 0)
+    .map(([date, e]) => ({ date, ...e }));
 
-    if(boosters.length||drains.length){
-      var allItems=boosters.concat(drains);
-      var maxI=Math.max.apply(null,allItems.map(function(c){return Math.abs(c.impact)}).concat([0.1]));
-      function renderRow(c,pos){
-        var pct=Math.round((Math.abs(c.impact)/maxI)*100);
-        return'<div class="corr-item"><div class="corr-top"><span class="corr-name">'+escHtml(c.name)+'</span><span class="corr-score '+(pos?'positive':'negative')+'">'+(c.impact>0?'+':'')+c.impact.toFixed(2)+'</span></div><div class="corr-bar-bg"><div class="corr-bar-fill '+(pos?'positive':'negative')+'" style="width:'+pct+'%"></div></div><div class="corr-meta">'+(c.n===1?'1 day':c.n+' days')+' · avg shift '+(c.avgWith>=0?'+':'')+c.avgWith.toFixed(1)+' when present</div></div>';
-      }
-      if(boosters.length)html+='<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy boosters</div><div class="corr-list">'+boosters.map(function(c){return renderRow(c,true)}).join('')+'</div></div>';
-      if(drains.length)html+='<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy drains</div><div class="corr-list">'+drains.map(function(c){return renderRow(c,false)}).join('')+'</div></div>';
-      html+='<div class="corr-note">Impact = avg energy shift on days with this activity minus days without. Tap a bar to see a specific day.</div>';
-    }
+  if (!withBoth.length) return '';
+
+  const allGiverNames   = [...new Set(withBoth.flatMap(e => e.givers   || []))];
+  const allDrainerNames = [...new Set(withBoth.flatMap(e => e.drainers || []))];
+
+  function computeCorr(name, field) {
+    const w  = withBoth.filter(e => (e[field] || []).includes(name));
+    const wo = withBoth.filter(e => !(e[field] || []).includes(name));
+    if (!w.length) return null;
+    const delta = e => e.eveningEnergy - e.morningEnergy;
+    const aW    = avg(w.map(delta));
+    const aWo   = wo.length ? avg(wo.map(delta)) : 0;
+    return { name, impact: aW - aWo, n: w.length, avgWith: aW };
   }
 
-  html+='<div style="height:8px"></div>';
-  c.innerHTML=html;
+  const boosters = allGiverNames  .map(n => computeCorr(n, 'givers'))  .filter(Boolean).sort((a,b) => b.impact - a.impact).slice(0, 6);
+  const drains   = allDrainerNames.map(n => computeCorr(n, 'drainers')).filter(Boolean).sort((a,b) => a.impact - b.impact).slice(0, 6);
+
+  if (!boosters.length && !drains.length) return '';
+
+  const maxI = Math.max(...[...boosters, ...drains].map(c => Math.abs(c.impact)), 0.1);
+
+  function corrRowHtml(c, isPositive) {
+    const pct = Math.round(Math.abs(c.impact) / maxI * 100);
+    const cls = isPositive ? 'positive' : 'negative';
+    const sign = c.impact > 0 ? '+' : '';
+    return `<div class="corr-item">
+      <div class="corr-top"><span class="corr-name">${escHtml(c.name)}</span><span class="corr-score ${cls}">${sign}${c.impact.toFixed(2)}</span></div>
+      <div class="corr-bar-bg"><div class="corr-bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="corr-meta">${c.n === 1 ? '1 day' : c.n + ' days'} · avg shift ${c.avgWith >= 0 ? '+' : ''}${c.avgWith.toFixed(1)} when present</div>
+    </div>`;
+  }
+
+  let html = '';
+  if (boosters.length) html += `<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy boosters</div><div class="corr-list">${boosters.map(c => corrRowHtml(c, true)).join('')}</div></div>`;
+  if (drains.length)   html += `<div class="card" style="padding:16px 20px"><div class="corr-card-title">Energy drains</div><div class="corr-list">${drains.map(c => corrRowHtml(c, false)).join('')}</div></div>`;
+  html += `<div class="corr-note">Impact = avg energy shift on days with this activity minus days without. Tap a bar to see a specific day.</div>`;
+  return html;
 }
 
 // ── VIEW SWITCH ───────────────────────────────────────────
-function switchView(v){
-  document.getElementById('view-daily').style.display=v==='daily'?'block':'none';
-  document.getElementById('view-insights').style.display=v==='insights'?'block':'none';
-  document.getElementById('nav-daily').classList.toggle('active',v==='daily');
-  document.getElementById('nav-insights').classList.toggle('active',v==='insights');
-  if(v==='insights')buildInsights();
-  else{buildWeekStrip();buildDailyContent();}
+function switchView(v) {
+  const isDaily    = v === 'daily';
+  const isInsights = v === 'insights';
+  document.getElementById('view-daily').style.display    = isDaily    ? 'block' : 'none';
+  document.getElementById('view-insights').style.display = isInsights ? 'block' : 'none';
+  document.getElementById('nav-daily').classList.toggle('active',    isDaily);
+  document.getElementById('nav-insights').classList.toggle('active', isInsights);
+  if (isInsights) buildInsights();
+  else            { buildWeekStrip(); buildDailyContent(); }
 }
 
 // ── MODAL ─────────────────────────────────────────────────
-function showExportImport(){document.getElementById('modal-overlay').style.display='block';document.getElementById('modal-sheet').style.display='block';}
-function hideModal(){document.getElementById('modal-overlay').style.display='none';document.getElementById('modal-sheet').style.display='none';}
-
-// ── EXPORT ───────────────────────────────────────────────
-function exportCSV(){
-  var rows=[['date','morning_energy','intention','evening_energy','givers','drainers','reflection']];
-  Object.keys(entries).sort().forEach(function(d){
-    var e=entries[d];
-    rows.push([d,e.morningEnergy||'','"'+(e.intention||'').replace(/"/g,'""')+'"',e.eveningEnergy||'','"'+(e.givers||[]).join(',').replace(/"/g,'""')+'"','"'+(e.drainers||[]).join(',').replace(/"/g,'""')+'"','"'+(e.reflection||'').replace(/"/g,'""')+'"']);
-  });
-  var csv=rows.map(function(r){return r.join(',')}).join('\n');
-  if(navigator.share){
-    var file=new File([csv],'lumina-'+todayStr()+'.csv',{type:'text/csv'});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:'Lumina Export'}).catch(function(){});hideModal();return;}
-  }
-  hideModal();
-  var overlay=document.createElement('div');
-  overlay.id='export-overlay';
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;flex-direction:column;padding:24px 16px;gap:12px';
-  overlay.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><span style="color:#f0f4ff;font-size:15px;font-weight:600">Copy your export</span><button onclick="document.getElementById(\'export-overlay\').remove()" style="background:none;border:none;color:#8b9ab4;font-size:24px;cursor:pointer;line-height:1">×</button></div><textarea id="export-csv" readonly style="flex:1;background:#101D36;color:#b0bdcf;border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;font-size:11px;font-family:monospace;resize:none;outline:none"></textarea><button onclick="navigator.clipboard.writeText(document.getElementById(\'export-csv\').value).then(function(){var b=event.target;b.textContent=\'Copied!\';setTimeout(function(){document.getElementById(\'export-overlay\').remove()},1000)})" style="background:#6366f1;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:\'DM Sans\',sans-serif">Copy to clipboard</button>';
-  document.body.appendChild(overlay);
-  document.getElementById('export-csv').value=csv;
+function showModal() {
+  document.getElementById('modal-overlay').style.display = 'block';
+  document.getElementById('modal-sheet').style.display   = 'block';
+}
+function hideModal() {
+  document.getElementById('modal-overlay').style.display = 'none';
+  document.getElementById('modal-sheet').style.display   = 'none';
 }
 
-// ── IMPORT ───────────────────────────────────────────────
-function importCSV(input){
-  var file=input.files[0];if(!file)return;
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var lines=e.target.result.split('\n').filter(function(l){return l.trim()});
-    if(lines.length<2){showToast('No data found');return;}
-    var headers=parseCSVLine(lines[0]).map(function(h){return h.toLowerCase().trim()});
-    function col(name){return headers.indexOf(name)}
-    var count=0;
-    lines.slice(1).forEach(function(line){
-      var cols=parseCSVLine(line);
-      if(cols.length<2)return;
-      var dateIdx=col('date')>=0?col('date'):0;
-      var date=(cols[dateIdx]||'').trim();
-      if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
-      function get(name,fb){var i=col(name);return i>=0?(cols[i]||''):(cols[fb]||'')}
-      entries[date]={
-        morningEnergy:parseInt(get('start of day energy',1))||parseInt(get('morning_energy',1))||0,
-        intention:get('intention',2),
-        eveningEnergy:parseInt(get('end of day energy',3))||parseInt(get('evening_energy',3))||0,
-        givers:get('energy givers',4).split(',').map(function(s){return s.trim()}).filter(Boolean),
-        drainers:get('energy drainers',5).split(',').map(function(s){return s.trim()}).filter(Boolean),
-        reflection:get('reflection',6)
+// ── EXPORT ────────────────────────────────────────────────
+function exportCSV() {
+  const rows = [['date','morning_energy','evening_energy','givers','drainers']];
+  Object.keys(entries).sort().forEach(d => {
+    const e = entries[d];
+    const q = s => `"${(s || '').replace(/"/g, '""')}"`;
+    rows.push([d, e.morningEnergy || '', e.eveningEnergy || '', q((e.givers || []).join(',')), q((e.drainers || []).join(','))]);
+  });
+  const csv = rows.map(r => r.join(',')).join('\n');
+  hideModal();
+  if (navigator.share && navigator.canShare) {
+    const file = new File([csv], `lumina-${todayStr()}.csv`, { type: 'text/csv' });
+    if (navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'Lumina Export' }).catch(() => showCopyModal(csv));
+      return;
+    }
+  }
+  showCopyModal(csv);
+}
+
+function showCopyModal(csv) {
+  const overlay = document.createElement('div');
+  overlay.id = 'export-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:flex;flex-direction:column;padding:24px 16px;gap:12px';
+  overlay.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="color:#f0f4ff;font-size:15px;font-weight:600">Copy your export</span>
+      <button onclick="document.getElementById('export-overlay').remove()" style="background:none;border:none;color:#8b9ab4;font-size:24px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <textarea id="export-csv" readonly style="flex:1;background:#101D36;color:#b0bdcf;border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px;font-size:11px;font-family:monospace;resize:none;outline:none"></textarea>
+    <button onclick="navigator.clipboard.writeText(document.getElementById('export-csv').value).then(()=>{event.target.textContent='Copied!';setTimeout(()=>document.getElementById('export-overlay').remove(),1000)})" style="background:#6366f1;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Copy to clipboard</button>`;
+  document.body.appendChild(overlay);
+  document.getElementById('export-csv').value = csv;
+}
+
+// ── IMPORT ────────────────────────────────────────────────
+function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const lines   = e.target.result.split('\n').filter(l => l.trim());
+    if (lines.length < 2) { showToast('No data found'); return; }
+    const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().trim());
+    const col     = name => headers.indexOf(name);
+
+    let count = 0;
+    lines.slice(1).forEach(line => {
+      const cols    = parseCSVLine(line);
+      if (cols.length < 2) return;
+      const dateIdx = col('date') >= 0 ? col('date') : 0;
+      const date    = (cols[dateIdx] || '').trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+
+      const get = (name, fb) => { const i = col(name); return i >= 0 ? (cols[i] || '') : (cols[fb] || ''); };
+      const splitTags = s => s.split(',').map(t => t.trim()).filter(Boolean);
+      entries[date] = {
+        morningEnergy: parseInt(get('morning_energy', 1)) || parseInt(get('start of day energy', 1)) || 0,
+        eveningEnergy: parseInt(get('evening_energy', 2)) || parseInt(get('end of day energy',   2)) || 0,
+        givers:        splitTags(get('givers',   3) || get('energy givers',   3)),
+        drainers:      splitTags(get('drainers', 4) || get('energy drainers', 4)),
       };
       count++;
     });
-    save();buildWeekStrip();buildDailyContent();hideModal();showToast('Imported '+count+' entries');
+
+    save(); buildWeekStrip(); buildDailyContent(); hideModal();
+    showToast(`Imported ${count} entries`);
   };
-  reader.readAsText(file);input.value='';
+  reader.readAsText(file);
+  input.value = '';
 }
 
-function parseCSVLine(line){
-  var result=[],cur='',inQ=false;
-  for(var i=0;i<line.length;i++){
-    var c=line[i];
-    if(c==='"'&&!inQ)inQ=true;
-    else if(c==='"'&&inQ){if(line[i+1]==='"'){cur+='"';i++;}else inQ=false;}
-    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
-    else cur+=c;
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if      (c === '"' && !inQ)               inQ = true;
+    else if (c === '"' && inQ)                { if (line[i+1] === '"') { cur += '"'; i++; } else inQ = false; }
+    else if (c === ',' && !inQ)               { result.push(cur.trim()); cur = ''; }
+    else                                      cur += c;
   }
   result.push(cur.trim());
   return result;
 }
 
-// ── CLEAR ─────────────────────────────────────────────────
-function clearAllData(){
-  var btn=document.getElementById('clear-btn');
-  if(btn.dataset.confirm!=='1'){btn.textContent='Tap again to confirm';btn.dataset.confirm='1';setTimeout(function(){btn.textContent='Clear all data';btn.dataset.confirm='';},3000);return;}
-  entries={};savedDates=[];save();localStorage.removeItem('lumina_mock_seeded');
-  buildWeekStrip();buildDailyContent();hideModal();showToast('All data cleared');
+// ── CLEAR DATA ────────────────────────────────────────────
+function clearAllData() {
+  const btn = document.getElementById('clear-btn');
+  if (btn.dataset.confirm !== '1') {
+    btn.textContent = 'Tap again to confirm';
+    btn.dataset.confirm = '1';
+    setTimeout(() => { btn.textContent = 'Clear all data'; btn.dataset.confirm = ''; }, 3000);
+    return;
+  }
+  entries = {}; savedDates = [];
+  save();
+  buildWeekStrip(); buildDailyContent(); hideModal();
+  showToast('All data cleared');
+}
+
+// ── ENTRIES TAB ───────────────────────────────────────────
+function buildEntriesTab(range) {
+  const givers   = [];
+  const drainers = [];
+
+  range.forEach(d => {
+    const e = entries[d];
+    if (!e) return;
+    const dateLabel = parseDate(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    (e.givers   || []).forEach(t => givers.push(  { text: t, date: dateLabel }));
+    (e.drainers || []).forEach(t => drainers.push({ text: t, date: dateLabel }));
+  });
+
+  function listHtml(items, type) {
+    if (!items.length) return `<div class="ro-empty">Nothing logged.</div>`;
+    return items.map(item => `
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:0.5px solid var(--border)">
+        <span style="font-size:14px;color:var(--white);flex:1;padding-right:12px">${escHtml(item.text)}</span>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0">${item.date}</span>
+      </div>`).join('');
+  }
+
+  return `
+    <div class="card">
+      <div class="corr-card-title" style="color:#e8c87a">Drainers</div>
+      ${listHtml(drainers, 'drainer')}
+    </div>
+    <div class="card">
+      <div class="corr-card-title" style="color:#7fb3a3">Givers</div>
+      ${listHtml(givers, 'giver')}
+    </div>`;
 }
 
 // ── INIT ──────────────────────────────────────────────────
@@ -870,41 +1508,51 @@ switchView('daily');
 buildWeekStrip();
 buildDailyContent();
 
-setTimeout(function(){
-  if(localStorage.getItem('lumina_mock_seeded'))return;
-  var today=todayStr();
-  var mock=[
-    {d:-27,m:2,i:'Prepare Q1 review',e:3,g:['morning run','good sleep'],dr:['long commute'],r:'Tired but run helped'},
-    {d:-26,m:3,i:'Deep work on proposal',e:4,g:['deep work block','no meetings'],dr:['skipped lunch'],r:'Really focused today'},
-    {d:-25,m:2,i:'',e:2,g:[],dr:['back-to-back meetings','late screen time'],r:'Meetings all day, drained'},
-    {d:-24,m:4,i:'Finish slides',e:5,g:['morning run','good sleep','deep work block'],dr:[],r:'Best day in weeks'},
-    {d:-23,m:3,i:'',e:3,g:['walk at lunch'],dr:['open office noise'],r:''},
-    {d:-21,m:2,i:'Start week calm',e:2,g:[],dr:['back-to-back meetings','poor sleep'],r:'Rough start to the week'},
-    {d:-20,m:3,i:'',e:4,g:['good sleep','deep work block','journaling'],dr:[],r:'Journaling made a real difference'},
-    {d:-19,m:1,i:'Survive the day',e:2,g:[],dr:['poor sleep','late screen time','long commute'],r:'Should have rested more'},
-    {d:-18,m:3,i:'',e:3,g:['walk at lunch','no meetings'],dr:['open office noise'],r:''},
-    {d:-17,m:4,i:'',e:5,g:['morning run','good sleep','deep work block'],dr:[],r:'Morning run sets the tone'},
-    {d:-16,m:2,i:'',e:3,g:['journaling'],dr:['back-to-back meetings'],r:'Journaling saved me'},
-    {d:-14,m:3,i:'',e:2,g:[],dr:['poor sleep','back-to-back meetings','skipped lunch'],r:'Skipping lunch is never worth it'},
-    {d:-13,m:4,i:'Creative work session',e:5,g:['morning run','deep work block','good sleep'],dr:[],r:''},
-    {d:-12,m:2,i:'',e:3,g:['walk at lunch'],dr:['late screen time'],r:''},
-    {d:-11,m:3,i:'',e:4,g:['no meetings','deep work block','journaling'],dr:[],r:'Clear schedule = clear head'},
-    {d:-10,m:2,i:'',e:1,g:[],dr:['poor sleep','back-to-back meetings','long commute','skipped lunch'],r:'Everything went wrong'},
-    {d:-9,m:3,i:'',e:3,g:['good sleep','walk at lunch'],dr:['open office noise'],r:''},
-    {d:-7,m:2,i:'New week intentions',e:3,g:['journaling'],dr:['back-to-back meetings'],r:''},
-    {d:-6,m:4,i:'',e:5,g:['morning run','good sleep','no meetings','deep work block'],dr:[],r:'Protecting mornings changes everything'},
-    {d:-5,m:3,i:'',e:2,g:[],dr:['poor sleep','late screen time','back-to-back meetings'],r:'Phone before bed ruins next day'},
-    {d:-4,m:3,i:'',e:4,g:['good sleep','walk at lunch','no meetings'],dr:[],r:''},
-    {d:-3,m:2,i:'',e:3,g:['morning run'],dr:['skipped lunch','open office noise'],r:''},
-    {d:-2,m:4,i:'',e:4,g:['deep work block','good sleep','journaling'],dr:[],r:'Two good days in a row'},
-    {d:-1,m:3,i:'',e:3,g:['walk at lunch'],dr:['long commute'],r:''}
+// ── MOCK DATA ─────────────────────────────────────────────
+function loadMockData() {
+  const btn = document.getElementById('clear-btn'); // reuse confirm pattern on a different btn if needed
+  const today = todayStr();
+  const mock = [
+    {d:-27,m:2,e:3,g:['morning run','good sleep'],             dr:['long commute']},
+    {d:-26,m:3,e:4,g:['deep work block','no meetings'],         dr:['skipped lunch']},
+    {d:-25,m:2,e:2,g:[],                                        dr:['back-to-back meetings','late screen time']},
+    {d:-24,m:4,e:5,g:['morning run','good sleep','deep work block'], dr:[]},
+    {d:-23,m:3,e:3,g:['walk at lunch'],                         dr:['open office noise']},
+    {d:-21,m:2,e:2,g:[],                                        dr:['back-to-back meetings','poor sleep']},
+    {d:-20,m:3,e:4,g:['good sleep','deep work block','journaling'], dr:[]},
+    {d:-19,m:1,e:2,g:[],                                        dr:['poor sleep','late screen time','long commute']},
+    {d:-18,m:3,e:3,g:['walk at lunch','no meetings'],            dr:['open office noise']},
+    {d:-17,m:4,e:5,g:['morning run','good sleep','deep work block'], dr:[]},
+    {d:-16,m:2,e:3,g:['journaling'],                             dr:['back-to-back meetings']},
+    {d:-14,m:3,e:2,g:[],                                        dr:['poor sleep','back-to-back meetings','skipped lunch']},
+    {d:-13,m:4,e:5,g:['morning run','deep work block','good sleep'], dr:[]},
+    {d:-12,m:2,e:3,g:['walk at lunch'],                          dr:['late screen time']},
+    {d:-11,m:3,e:4,g:['no meetings','deep work block','journaling'], dr:[]},
+    {d:-10,m:2,e:1,g:[],                                        dr:['poor sleep','back-to-back meetings','long commute','skipped lunch']},
+    {d:- 9,m:3,e:3,g:['good sleep','walk at lunch'],              dr:['open office noise']},
+    {d:- 7,m:2,e:3,g:['journaling'],                             dr:['back-to-back meetings']},
+    {d:- 6,m:4,e:5,g:['morning run','good sleep','no meetings','deep work block'], dr:[]},
+    {d:- 5,m:3,e:2,g:[],                                        dr:['poor sleep','late screen time','back-to-back meetings']},
+    {d:- 4,m:3,e:4,g:['good sleep','walk at lunch','no meetings'],dr:[]},
+    {d:- 3,m:2,e:3,g:['morning run'],                            dr:['skipped lunch','open office noise']},
+    {d:- 2,m:4,e:4,g:['deep work block','good sleep','journaling'],dr:[]},
+    {d:- 1,m:3,e:3,g:['walk at lunch'],                          dr:['long commute']},
   ];
-  mock.forEach(function(item){
-    entries[addDays(today,item.d)]={morningEnergy:item.m,intention:item.i||'',eveningEnergy:item.e,givers:item.g||[],drainers:item.dr||[],reflection:item.r||''};
+  mock.forEach(item => {
+    entries[addDays(today, item.d)] = {
+      morningEnergy: item.m,
+      eveningEnergy: item.e,
+      givers:        item.g  || [],
+      drainers:      item.dr || [],
+    };
   });
-  save();localStorage.setItem('lumina_mock_seeded','1');
-  buildWeekStrip();buildDailyContent();
-},0);
+  save();
+  buildWeekStrip();
+  buildDailyContent();
+  hideModal();
+  showToast('Mock data loaded');
+}
+
 </script>
 </body>
 </html>
