@@ -55,8 +55,8 @@ html, body {
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   min-height: -webkit-fill-available;
   max-width: 430px;
   margin: 0 auto;
@@ -578,6 +578,144 @@ html, body {
 .empty-state { text-align: center; padding: 48px 32px; color: var(--muted); }
 .empty-state svg { width: 48px; height: 48px; stroke: var(--muted); stroke-width: 1.2; fill: none; margin-bottom: 16px; opacity: 0.5; }
 .empty-state p   { font-size: 14px; line-height: 1.6; }
+
+/* ── MORNING CHECK-IN MODAL ──────────────────────────────── */
+.checkin-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 150;
+}
+.checkin-sheet {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  background: var(--card);
+  border-top: 0.5px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 0 0 calc(28px + env(safe-area-inset-bottom));
+  z-index: 151;
+  max-height: 92dvh;
+  overflow-y: auto;
+}
+.checkin-sheet::-webkit-scrollbar { width: 0; }
+
+.checkin-handle {
+  width: 36px; height: 4px;
+  background: var(--muted);
+  border-radius: 2px;
+  margin: 16px auto 20px;
+}
+.checkin-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  color: var(--white);
+  padding: 0 20px 4px;
+}
+.checkin-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 0 20px 20px;
+}
+
+.checkin-conditions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 16px;
+  margin-bottom: 20px;
+}
+.checkin-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.checkin-item:active { background: var(--card2); }
+.checkin-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--card2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.checkin-checkbox svg {
+  width: 12px; height: 12px;
+  stroke: #fff;
+  stroke-width: 2.5;
+  fill: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.checkin-item.checked .checkin-checkbox {
+  background: var(--violet);
+  border-color: var(--violet);
+}
+.checkin-item.checked .checkin-checkbox svg { opacity: 1; }
+.checkin-item-text {
+  font-size: 14px;
+  color: var(--slate);
+  line-height: 1.4;
+  flex: 1;
+  transition: color 0.15s;
+}
+.checkin-item.checked .checkin-item-text { color: var(--white); }
+
+.checkin-score-area {
+  margin: 0 16px 20px;
+  background: var(--card2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+.checkin-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.checkin-score-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  color: var(--white);
+  line-height: 1;
+}
+.checkin-score-denom {
+  font-size: 14px;
+  color: var(--muted);
+}
+.checkin-score-bar-bg {
+  height: 4px;
+  background: var(--card);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.checkin-score-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--violet2), var(--violet));
+  transition: width 0.3s ease;
+}
+.checkin-score-msg {
+  font-size: 13px;
+  color: var(--slate);
+  line-height: 1.4;
+}
 </style>
 </head>
 <body>
@@ -652,6 +790,53 @@ html, body {
     </div>
   </div>
 
+<!-- ── MORNING CHECK-IN MODAL ── -->
+<div class="checkin-overlay" id="checkin-overlay" onclick="hideCheckin()"></div>
+<div class="checkin-sheet" id="checkin-sheet">
+  <div class="checkin-handle"></div>
+  <div class="checkin-title">Morning check-in</div>
+  <div class="checkin-subtitle">How is today set up?</div>
+
+  <div class="checkin-conditions" id="checkin-conditions">
+    <div class="checkin-item" data-idx="0" onclick="toggleCondition(0)">
+      <div class="checkin-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checkin-item-text">I have my own piece of work today</span>
+    </div>
+    <div class="checkin-item" data-idx="1" onclick="toggleCondition(1)">
+      <div class="checkin-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checkin-item-text">There's a block of uninterrupted time in my day</span>
+    </div>
+    <div class="checkin-item" data-idx="2" onclick="toggleCondition(2)">
+      <div class="checkin-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checkin-item-text">There's at least one meaningful conversation planned</span>
+    </div>
+    <div class="checkin-item" data-idx="3" onclick="toggleCondition(3)">
+      <div class="checkin-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checkin-item-text">There's something new or interesting to explore</span>
+    </div>
+    <div class="checkin-item" data-idx="4" onclick="toggleCondition(4)">
+      <div class="checkin-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <span class="checkin-item-text">I know what done looks like today</span>
+    </div>
+  </div>
+
+  <div class="checkin-score-area">
+    <div class="checkin-score-row">
+      <span class="checkin-score-num" id="checkin-score-num">0</span>
+      <span class="checkin-score-denom">/ 5</span>
+    </div>
+    <div class="checkin-score-bar-bg">
+      <div class="checkin-score-bar-fill" id="checkin-score-bar" style="width:0%"></div>
+    </div>
+    <div class="checkin-score-msg" id="checkin-score-msg">Low readiness — consider blocking time or claiming ownership of something</div>
+  </div>
+
+  <button class="save-btn" style="margin-bottom:4px" onclick="saveCheckin()">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    Save check-in
+  </button>
+</div><!-- /checkin-sheet -->
+
 </div><!-- /app -->
 
 <!-- ── MODAL ── -->
@@ -696,7 +881,7 @@ html, body {
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         About Lumina
       </div>
-      <span style="font-size:12px;color:var(--muted)">v1.1.0</span>
+      <span style="font-size:12px;color:var(--muted)">v1.2.0</span>
     </div>
   </div>
 </div>
@@ -851,7 +1036,7 @@ function animateWeekRow(dir, cb) {
 }
 
 // Swipe gesture on week strip
-(function initWeekSwipe() {
+function initWeekSwipe() {
   const strip = document.querySelector('.week-strip');
   let sx = 0, sy = 0, cx = 0, locked = false, axisLocked = false;
 
@@ -895,7 +1080,7 @@ function animateWeekRow(dir, cb) {
       r.style.opacity    = '1';
     }
   }, { passive: true });
-})();
+}
 
 // ── SVG ICONS (reused) ────────────────────────────────────
 const ICONS = {
@@ -961,6 +1146,15 @@ function buildDailyContent() {
 function buildEdit(container, entry) {
   const giverTags   = tagSectionHtml(entry.givers,   'givers',   true);
   const drainerTags = tagSectionHtml(entry.drainers, 'drainers', true);
+  const rs          = entry.readinessScore != null ? entry.readinessScore : null;
+  const readinessHtml = rs !== null
+    ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:0.5px solid var(--border)">
+        <span style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;font-weight:600">Readiness</span>
+        <span style="font-size:13px;font-weight:600;color:var(--violet2);cursor:pointer" onclick="showCheckin()">${rs}/5 — edit</span>
+       </div>`
+    : `<div style="margin-top:14px;padding-top:14px;border-top:0.5px solid var(--border)">
+        <button onclick="showCheckin()" style="background:none;border:none;padding:0;font-size:13px;color:var(--violet2);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">+ Morning check-in</button>
+       </div>`;
 
   container.innerHTML = `
     <div class="card">
@@ -969,6 +1163,7 @@ function buildEdit(container, entry) {
         <div class="field-label">Energy level</div>
         ${energyRowHtml(entry.morningEnergy, 'setMorning')}
       </div>
+      ${readinessHtml}
     </div>
     <div class="card" style="margin-top:24px">
       ${cardHeaderHtml(ICONS.evening, 'Evening', 'End of day reflection')}
@@ -1013,6 +1208,16 @@ function buildReadOnly(container, entry) {
     </div><div style="height:12px"></div>`
     : `<div class="ro-empty">No energy logged</div>`;
 
+  const rs = entry.readinessScore != null ? entry.readinessScore : null;
+  const readinessSection = rs !== null
+    ? `<div style="margin-top:16px;padding-top:14px;border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);font-weight:600;margin-bottom:3px">Readiness</div>
+          <div style="font-size:15px;font-weight:600;color:var(--violet2)">${rs}/5</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);max-width:200px;text-align:right;line-height:1.4">${readinessMsg(rs)}</div>
+      </div>` : '';
+
   const nothingLogged = (!m && !ev && !entry.givers.length && !entry.drainers.length)
     ? `<div class="ro-empty">Nothing logged</div>` : '';
 
@@ -1023,6 +1228,7 @@ function buildReadOnly(container, entry) {
         ${deltaBadge}
       </div>
       ${energySection}
+      ${readinessSection}
       ${entry.drainers.length ? `<div style="margin-top:20px;margin-bottom:14px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);font-weight:600;margin-bottom:8px">Drainers</div>${tagSectionHtml(entry.drainers,'drainers',false)}</div>` : ''}
       ${entry.givers.length   ? `<div style="margin-top:20px;margin-bottom:14px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--slate);font-weight:600;margin-bottom:8px">Givers</div>${tagSectionHtml(entry.givers,'givers',false)}</div>` : ''}
       ${nothingLogged}
@@ -1370,11 +1576,12 @@ function hideModal() {
 
 // ── EXPORT ────────────────────────────────────────────────
 function exportCSV() {
-  const rows = [['date','morning_energy','evening_energy','givers','drainers']];
+  const rows = [['date','morning_energy','evening_energy','givers','drainers','readiness_score','conditions']];
   Object.keys(entries).sort().forEach(d => {
     const e = entries[d];
     const q = s => `"${(s || '').replace(/"/g, '""')}"`;
-    rows.push([d, e.morningEnergy || '', e.eveningEnergy || '', q((e.givers || []).join(',')), q((e.drainers || []).join(','))]);
+    const cond = (e.conditions || []).map(v => v ? '1' : '0').join('|');
+    rows.push([d, e.morningEnergy || '', e.eveningEnergy || '', q((e.givers || []).join(',')), q((e.drainers || []).join(',')), e.readinessScore != null ? e.readinessScore : '', q(cond)]);
   });
   const csv = rows.map(r => r.join(',')).join('\n');
   hideModal();
@@ -1502,8 +1709,111 @@ function buildEntriesTab(range) {
     </div>`;
 }
 
+// ── MORNING CHECK-IN ──────────────────────────────────────
+const CONDITIONS = [
+  'I have my own piece of work today',
+  'There\'s a block of uninterrupted time in my day',
+  'There\'s at least one meaningful conversation planned',
+  'There\'s something new or interesting to explore',
+  'I know what done looks like today',
+];
+
+let checkinState = [false, false, false, false, false];
+
+function readinessMsg(score) {
+  if (score <= 1) return 'Low readiness — consider blocking time or claiming ownership of something';
+  if (score <= 3) return 'Worth a tweak — one small adjustment before the day starts';
+  if (score === 4) return 'Good to go — note what\'s missing, it may matter later';
+  return 'High energy setup — protect your deep work block';
+}
+
+function showCheckin() {
+  const entry = getEntry(selectedDate);
+  checkinState = entry.conditions
+    ? [...entry.conditions]
+    : [false, false, false, false, false];
+
+  const items = document.querySelectorAll('.checkin-item');
+  items.forEach((item, i) => {
+    item.classList.toggle('checked', checkinState[i]);
+  });
+  updateCheckinScore();
+
+  const overlay = document.getElementById('checkin-overlay');
+  const sheet   = document.getElementById('checkin-sheet');
+  overlay.style.display = 'block';
+  sheet.style.display   = 'block';
+  sheet.style.transform = 'translateX(-50%) translateY(0)';
+  sheet.style.transition = '';
+
+  // Swipe down to close
+  let startY = 0, currentY = 0, dragging = false;
+
+  sheet.addEventListener('touchstart', e => {
+    startY   = e.touches[0].clientY;
+    dragging = true;
+    sheet.style.transition = 'none';
+  }, { passive: true });
+
+  sheet.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    currentY = e.touches[0].clientY;
+    const dy = Math.max(0, currentY - startY);
+    sheet.style.transform = `translateX(-50%) translateY(${dy}px)`;
+  }, { passive: true });
+
+  sheet.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    const dy = Math.max(0, currentY - startY);
+    sheet.style.transition = 'transform 0.3s ease';
+    if (dy > 80) {
+      sheet.style.transform = 'translateX(-50%) translateY(100%)';
+      setTimeout(hideCheckin, 300);
+    } else {
+      sheet.style.transform = 'translateX(-50%) translateY(0)';
+    }
+  });
+}
+
+function hideCheckin() {
+  const sheet = document.getElementById('checkin-sheet');
+  sheet.style.transition = 'transform 0.3s ease';
+  sheet.style.transform  = 'translateX(-50%) translateY(100%)';
+  setTimeout(() => {
+    document.getElementById('checkin-overlay').style.display = 'none';
+    sheet.style.display   = 'none';
+    sheet.style.transform = 'translateX(-50%) translateY(0)';
+  }, 300);
+}
+
+function toggleCondition(idx) {
+  checkinState[idx] = !checkinState[idx];
+  const item = document.querySelector(`.checkin-item[data-idx="${idx}"]`);
+  if (item) item.classList.toggle('checked', checkinState[idx]);
+  updateCheckinScore();
+}
+
+function updateCheckinScore() {
+  const score = checkinState.filter(Boolean).length;
+  document.getElementById('checkin-score-num').textContent = score;
+  document.getElementById('checkin-score-bar').style.width = (score / 5 * 100) + '%';
+  document.getElementById('checkin-score-msg').textContent = readinessMsg(score);
+}
+
+function saveCheckin() {
+  const score = checkinState.filter(Boolean).length;
+  const entry = getEntry(selectedDate);
+  entry.conditions     = [...checkinState];
+  entry.readinessScore = score;
+  save();
+  hideCheckin();
+  buildDailyContent();
+}
+
 // ── INIT ──────────────────────────────────────────────────
 load();
+initWeekSwipe();
 switchView('daily');
 buildWeekStrip();
 buildDailyContent();
